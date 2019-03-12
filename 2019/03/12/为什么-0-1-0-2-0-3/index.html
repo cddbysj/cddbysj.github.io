@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>为什么 0.1 + 0.2 !== 0.3 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="JavaScript 中的数字以 64 位浮点数的格式表示，遵从IEEE 754-1985这一用二进制表示数字的工业标准。其中的 52 位用于分数部分，即存储精度；11 位用于指数部分，即表示小数点的位置；1 位用于符号位，表示正负。如下图所示：  对于 64 位双精度数字而言，维基百科上给出了如下信息：  Width: 64 bits Range at full precision: ±2.23">
+<meta name="keywords" content="JavaScript,精度丢失">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么 0.1 + 0.2 !== 0.3">
+<meta property="og:url" content="https://cddbysj.github.io/2019/03/12/为什么-0-1-0-2-0-3/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="JavaScript 中的数字以 64 位浮点数的格式表示，遵从IEEE 754-1985这一用二进制表示数字的工业标准。其中的 52 位用于分数部分，即存储精度；11 位用于指数部分，即表示小数点的位置；1 位用于符号位，表示正负。如下图所示：  对于 64 位双精度数字而言，维基百科上给出了如下信息：  Width: 64 bits Range at full precision: ±2.23">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/IEEE_754_Double_Floating_Point_Format.svg/618px-IEEE_754_Double_Floating_Point_Format.svg.png">
+<meta property="og:updated_time" content="2019-03-12T05:08:09.232Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为什么 0.1 + 0.2 !== 0.3">
+<meta name="twitter:description" content="JavaScript 中的数字以 64 位浮点数的格式表示，遵从IEEE 754-1985这一用二进制表示数字的工业标准。其中的 52 位用于分数部分，即存储精度；11 位用于指数部分，即表示小数点的位置；1 位用于符号位，表示正负。如下图所示：  对于 64 位双精度数字而言，维基百科上给出了如下信息：  Width: 64 bits Range at full precision: ±2.23">
+<meta name="twitter:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/IEEE_754_Double_Floating_Point_Format.svg/618px-IEEE_754_Double_Floating_Point_Format.svg.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://cddbysj.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-为什么-0-1-0-2-0-3" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/12/为什么-0-1-0-2-0-3/" class="article-date">
+  <time datetime="2019-03-12T01:44:15.000Z" itemprop="datePublished">2019-03-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      为什么 0.1 + 0.2 !== 0.3
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>JavaScript 中的数字以 64 位浮点数的格式表示，遵从<a href="http://en.wikipedia.org/wiki/IEEE_754-1985" target="_blank" rel="noopener">IEEE 754-1985</a>这一用二进制表示数字的工业标准。其中的 52 位用于分数部分，即存储精度；11 位用于指数部分，即表示小数点的位置；1 位用于符号位，表示正负。如下图所示：</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/IEEE_754_Double_Floating_Point_Format.svg/618px-IEEE_754_Double_Floating_Point_Format.svg.png" alt="Double Floating Point Format"></p>
+<p>对于 64 位双精度数字而言，维基百科上给出了如下信息：</p>
+<ul>
+<li>Width: 64 bits</li>
+<li>Range at full precision: <code>±2.23×10e308</code> to <code>±1.80×10e308</code></li>
+<li>Precision: Approximately 16 decimal digits</li>
+</ul>
+<p>即在保证精度不丢失的前提下，64 位浮点数最多能表示 16 位的十进制数，超出这一限制则导致精度丢失。回到标题抛出的问题：<code>0.1 + 0.2 !== 0.3</code>，我们可以试着运行以下代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="number">0.1</span>.toFixed(<span class="number">16</span>));</span><br><span class="line"><span class="comment">// 0.1000000000000000</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">0.1</span>.toFixed(<span class="number">17</span>));</span><br><span class="line"><span class="comment">// 0.10000000000000001</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">0.1</span>.toFixed(<span class="number">20</span>));</span><br><span class="line"><span class="comment">// 0.10000000000000000555</span></span><br></pre></td></tr></table></figure></p>
+<p>这进一步说明超过 16 位的十进制数，使用 64 位浮点数的二进制表示会产生精度丢失。与此同时，我们注意到：十进制数 <code>0.1</code> 是无法用二进制来精确表示的，这正如 <code>1 / 3</code> 无法在十进制下用有限位数来精确表示，是一样的道理。这里引出了一个问题，什么样的数字在十进制下无法精确表示？什么样的数字在二进制下无法精确表示？</p>
+<h2 id="个人对进制的思考"><a href="#个人对进制的思考" class="headerlink" title="个人对进制的思考"></a>个人对进制的思考</h2><p>进制即进位计数制，十进制即逢十进一，二进制即逢二进一，N 进制即逢 N 进一；从相反的一面来看，N 也是基数，即在 N 进制下如果要产生小数，便是用 N 为基数去分割。为了方便说明，这里以十进制为例。在十进制下，要产生可以精确表示的小数就是用基数 10 去分割，所以 <code>1 / 10</code> 是可以精确表示的，又由于 <code>10</code> 本身并非素数，可以由 <code>2 x 5</code> 得来，所以十进制下，只有分母表述成如下方式的小数才能精确表示：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>**x * <span class="number">5</span>**y</span><br><span class="line"><span class="comment">// x 和 y 为 非负整数</span></span><br></pre></td></tr></table></figure></p>
+<p>考虑常见的 <code>1 / 2</code> 到 <code>1 / 10</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1 / 2 -&gt; 2**1 * 5**0</span><br><span class="line">1 / 3 -&gt; fail</span><br><span class="line">1 / 4 -&gt; 2**2 * 5**0</span><br><span class="line">1 / 5 -&gt; 2**0 * 5**1</span><br><span class="line">1 / 6 -&gt; fail</span><br><span class="line">1 / 7 -&gt; fail</span><br><span class="line">1 / 8 -&gt; 2**3 * 5**0</span><br><span class="line">1 / 9 -&gt; fail</span><br><span class="line">1 / 10 -&gt; 2**1 * 5**1</span><br></pre></td></tr></table></figure></p>
+<p>引申到二进制的环境下，只有分母表述成如下方式的二进制小数才能精确表示：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>**x</span><br><span class="line"><span class="comment">// x 为非负整数</span></span><br></pre></td></tr></table></figure></p>
+<p>所以对于十进制数 <code>0.1</code>, <code>0.2</code>, <code>0.3</code>都无法用二进制来精确表示，当两个数字求和时，它们丢失的精度会加起来，这便是 <code>0.1 + 0.2 !== 0.3</code> 的原因。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cddbysj.github.io/2019/03/12/为什么-0-1-0-2-0-3/" data-id="cjt54m06u00049gvg2er5j1jw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/精度丢失/">精度丢失</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/03/12/Git-Bash-常用命令集锦/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Git Bash 常用命令集锦</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git-Bash/">Git Bash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备忘录/">备忘录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/宽松相等与严格相等/">宽松相等与严格相等</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/求值策略/">求值策略</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/精度丢失/">精度丢失</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Git-Bash/" style="font-size: 10px;">Git Bash</a> <a href="/tags/JavaScript/" style="font-size: 20px;">JavaScript</a> <a href="/tags/备忘录/" style="font-size: 10px;">备忘录</a> <a href="/tags/宽松相等与严格相等/" style="font-size: 10px;">宽松相等与严格相等</a> <a href="/tags/求值策略/" style="font-size: 10px;">求值策略</a> <a href="/tags/精度丢失/" style="font-size: 10px;">精度丢失</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/03/">March 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/03/12/为什么-0-1-0-2-0-3/">为什么 0.1 + 0.2 !== 0.3</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/12/Git-Bash-常用命令集锦/">Git Bash 常用命令集锦</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/06/‘==’与'==='/">&#39;==&#39;与&#39;===&#39;</a>
+          </li>
+        
+          <li>
+            <a href="/2019/03/05/JavaScript中的求值策略/">JavaScript中的求值策略</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Bill Wen<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

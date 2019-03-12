@@ -62,6 +62,58 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-为什么-0-1-0-2-0-3" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/03/12/为什么-0-1-0-2-0-3/" class="article-date">
+  <time datetime="2019-03-12T01:44:15.000Z" itemprop="datePublished">2019-03-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/12/为什么-0-1-0-2-0-3/">为什么 0.1 + 0.2 !== 0.3</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>JavaScript 中的数字以 64 位浮点数的格式表示，遵从<a href="http://en.wikipedia.org/wiki/IEEE_754-1985" target="_blank" rel="noopener">IEEE 754-1985</a>这一用二进制表示数字的工业标准。其中的 52 位用于分数部分，即存储精度；11 位用于指数部分，即表示小数点的位置；1 位用于符号位，表示正负。如下图所示：</p>
+<p><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/IEEE_754_Double_Floating_Point_Format.svg/618px-IEEE_754_Double_Floating_Point_Format.svg.png" alt="Double Floating Point Format"></p>
+<p>对于 64 位双精度数字而言，维基百科上给出了如下信息：</p>
+<ul>
+<li>Width: 64 bits</li>
+<li>Range at full precision: <code>±2.23×10e308</code> to <code>±1.80×10e308</code></li>
+<li>Precision: Approximately 16 decimal digits</li>
+</ul>
+<p>即在保证精度不丢失的前提下，64 位浮点数最多能表示 16 位的十进制数，超出这一限制则导致精度丢失。回到标题抛出的问题：<code>0.1 + 0.2 !== 0.3</code>，我们可以试着运行以下代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="number">0.1</span>.toFixed(<span class="number">16</span>));</span><br><span class="line"><span class="comment">// 0.1000000000000000</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">0.1</span>.toFixed(<span class="number">17</span>));</span><br><span class="line"><span class="comment">// 0.10000000000000001</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="number">0.1</span>.toFixed(<span class="number">20</span>));</span><br><span class="line"><span class="comment">// 0.10000000000000000555</span></span><br></pre></td></tr></table></figure></p>
+<p>这进一步说明超过 16 位的十进制数，使用 64 位浮点数的二进制表示会产生精度丢失。与此同时，我们注意到：十进制数 <code>0.1</code> 是无法用二进制来精确表示的，这正如 <code>1 / 3</code> 无法在十进制下用有限位数来精确表示，是一样的道理。这里引出了一个问题，什么样的数字在十进制下无法精确表示？什么样的数字在二进制下无法精确表示？</p>
+<h2 id="个人对进制的思考"><a href="#个人对进制的思考" class="headerlink" title="个人对进制的思考"></a>个人对进制的思考</h2><p>进制即进位计数制，十进制即逢十进一，二进制即逢二进一，N 进制即逢 N 进一；从相反的一面来看，N 也是基数，即在 N 进制下如果要产生小数，便是用 N 为基数去分割。为了方便说明，这里以十进制为例。在十进制下，要产生可以精确表示的小数就是用基数 10 去分割，所以 <code>1 / 10</code> 是可以精确表示的，又由于 <code>10</code> 本身并非素数，可以由 <code>2 x 5</code> 得来，所以十进制下，只有分母表述成如下方式的小数才能精确表示：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>**x * <span class="number">5</span>**y</span><br><span class="line"><span class="comment">// x 和 y 为 非负整数</span></span><br></pre></td></tr></table></figure></p>
+<p>考虑常见的 <code>1 / 2</code> 到 <code>1 / 10</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1 / 2 -&gt; 2**1 * 5**0</span><br><span class="line">1 / 3 -&gt; fail</span><br><span class="line">1 / 4 -&gt; 2**2 * 5**0</span><br><span class="line">1 / 5 -&gt; 2**0 * 5**1</span><br><span class="line">1 / 6 -&gt; fail</span><br><span class="line">1 / 7 -&gt; fail</span><br><span class="line">1 / 8 -&gt; 2**3 * 5**0</span><br><span class="line">1 / 9 -&gt; fail</span><br><span class="line">1 / 10 -&gt; 2**1 * 5**1</span><br></pre></td></tr></table></figure></p>
+<p>引申到二进制的环境下，只有分母表述成如下方式的二进制小数才能精确表示：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>**x</span><br><span class="line"><span class="comment">// x 为非负整数</span></span><br></pre></td></tr></table></figure></p>
+<p>所以对于十进制数 <code>0.1</code>, <code>0.2</code>, <code>0.3</code>都无法用二进制来精确表示，当两个数字求和时，它们丢失的精度会加起来，这便是 <code>0.1 + 0.2 !== 0.3</code> 的原因。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cddbysj.github.io/2019/03/12/为什么-0-1-0-2-0-3/" data-id="cjt54m06u00049gvg2er5j1jw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/精度丢失/">精度丢失</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Git-Bash-常用命令集锦" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/12/Git-Bash-常用命令集锦/" class="article-date">
@@ -96,7 +148,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://cddbysj.github.io/2019/03/12/Git-Bash-常用命令集锦/" data-id="cjt53bsiv0000j0vgx9bmut7y" class="article-share-link">Share</a>
+      <a data-url="https://cddbysj.github.io/2019/03/12/Git-Bash-常用命令集锦/" data-id="cjt54m06c00009gvgowpy53zf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git-Bash/">Git Bash</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/备忘录/">备忘录</a></li></ul>
@@ -138,7 +190,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://cddbysj.github.io/2019/03/06/‘==’与'==='/" data-id="cjt53bsjg0003j0vggr0skcf4" class="article-share-link">Share</a>
+      <a data-url="https://cddbysj.github.io/2019/03/06/‘==’与'==='/" data-id="cjt54m06r00039gvghhsud7ik" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/宽松相等与严格相等/">宽松相等与严格相等</a></li></ul>
@@ -194,7 +246,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://cddbysj.github.io/2019/03/05/JavaScript中的求值策略/" data-id="cjt53bsj80001j0vg7wvnppx5" class="article-share-link">Share</a>
+      <a data-url="https://cddbysj.github.io/2019/03/05/JavaScript中的求值策略/" data-id="cjt54m06l00019gvgxe9pd7tt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/求值策略/">求值策略</a></li></ul>
@@ -219,7 +271,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git-Bash/">Git Bash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备忘录/">备忘录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/宽松相等与严格相等/">宽松相等与严格相等</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/求值策略/">求值策略</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git-Bash/">Git Bash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备忘录/">备忘录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/宽松相等与严格相等/">宽松相等与严格相等</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/求值策略/">求值策略</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/精度丢失/">精度丢失</a></li></ul>
     </div>
   </div>
 
@@ -229,7 +281,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Git-Bash/" style="font-size: 10px;">Git Bash</a> <a href="/tags/JavaScript/" style="font-size: 20px;">JavaScript</a> <a href="/tags/备忘录/" style="font-size: 10px;">备忘录</a> <a href="/tags/宽松相等与严格相等/" style="font-size: 10px;">宽松相等与严格相等</a> <a href="/tags/求值策略/" style="font-size: 10px;">求值策略</a>
+      <a href="/tags/Git-Bash/" style="font-size: 10px;">Git Bash</a> <a href="/tags/JavaScript/" style="font-size: 20px;">JavaScript</a> <a href="/tags/备忘录/" style="font-size: 10px;">备忘录</a> <a href="/tags/宽松相等与严格相等/" style="font-size: 10px;">宽松相等与严格相等</a> <a href="/tags/求值策略/" style="font-size: 10px;">求值策略</a> <a href="/tags/精度丢失/" style="font-size: 10px;">精度丢失</a>
     </div>
   </div>
 
@@ -249,6 +301,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2019/03/12/为什么-0-1-0-2-0-3/">为什么 0.1 + 0.2 !== 0.3</a>
+          </li>
         
           <li>
             <a href="/2019/03/12/Git-Bash-常用命令集锦/">Git Bash 常用命令集锦</a>
