@@ -62,6 +62,274 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-学习笔记：面向对象之混入" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/08/学习笔记：面向对象之混入/" class="article-date">
+  <time datetime="2019-04-08T07:26:08.000Z" itemprop="datePublished">2019-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/08/学习笔记：面向对象之混入/">学习笔记：面向对象之混入</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在 JavaScript 中，基于原型的继承是不支持多继承的。但是，在有些时候我们希望有类似的机制。一个非常的典型的例子是事件。有很多的对象，都应该含有对事件处理的方法。而这些针对事件处理的方法不适合被放在原型链中。在 JavaScript 中，实现混入<strong>mixin</strong>的方式非常简单：将这些方法放在一个对象中，然后通过 <code>Object.assign</code> 将该对象内的方法添加到类中。</p>
+<h2 id="实例：事件混入"><a href="#实例：事件混入" class="headerlink" title="实例：事件混入"></a>实例：事件混入</h2><p>许多对象的一个重要特性是对事件的处理。下面的代码，通过混入的方式扩展了类的行为。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//事件混入：</span></span><br><span class="line"><span class="keyword">const</span> eventMixin = &#123;</span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 订阅事件</span></span><br><span class="line"><span class="comment">   * @param &#123;String&#125; eventName 订阅的事件名称</span></span><br><span class="line"><span class="comment">   * @param &#123;Function&#125; handler 订阅的事件处理的回调函数</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  on(eventName, handler) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>._eventHandlers) &#123;</span><br><span class="line">      <span class="keyword">this</span>._eventHandlers = &#123;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>._eventHandlers[eventName]) &#123;</span><br><span class="line">      <span class="keyword">this</span>._eventHandlers[eventName] = [];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>._eventHandlers[eventName].push(handler);</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 取消订阅事件</span></span><br><span class="line"><span class="comment">   * @param &#123;String&#125; eventName 要取消订阅的事件名称</span></span><br><span class="line"><span class="comment">   * @param &#123;Function&#125; handler 要取消订阅的事件处理回调函数</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  off(eventName, handler) &#123;</span><br><span class="line">    <span class="keyword">const</span> handlers = <span class="keyword">this</span>._eventHandlers &amp;&amp; <span class="keyword">this</span>._eventHandlers[eventName];</span><br><span class="line">    <span class="keyword">if</span> (!handlers) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; handlers.length; i++) &#123;</span><br><span class="line">      <span class="keyword">if</span> (handlers[i] === handler) &#123;</span><br><span class="line">        handlers.splice(i--, <span class="number">1</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 触发事件</span></span><br><span class="line"><span class="comment">   * @param &#123;String&#125; eventName 事件名称</span></span><br><span class="line"><span class="comment">   * @param  &#123;any&#125; args 事件处理回调函数的参数</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  trigger(eventName, ...args) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>._eventHandlers || !<span class="keyword">this</span>._eventHandlers[eventName]) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>._eventHandlers[eventName].forEach(<span class="function"><span class="params">handler</span> =&gt;</span> handler.apply(<span class="keyword">this</span>, args));</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Menu</span> </span>&#123;</span><br><span class="line">  choose(value) &#123;</span><br><span class="line">    <span class="keyword">this</span>.trigger(<span class="string">"select"</span>, value);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将事件混入 Menu 对象的原型</span></span><br><span class="line"><span class="built_in">Object</span>.assign(Menu.prototype, eventMixin);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> menu = <span class="keyword">new</span> Menu();</span><br><span class="line"><span class="comment">// 订阅 select 事件</span></span><br><span class="line">menu.on(<span class="string">"select"</span>, value =&gt; alert(value));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 触发 select 事件</span></span><br><span class="line">menu.choose(<span class="string">"apple"</span>);</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cddbysj.github.io/2019/04/08/学习笔记：面向对象之混入/" data-id="cju81el3q0000wwvgohgatx1x" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面向对象/">面向对象</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-学习笔记：class 语法糖" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/04/学习笔记：class 语法糖/" class="article-date">
+  <time datetime="2019-04-04T05:55:08.000Z" itemprop="datePublished">2019-04-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/04/学习笔记：class 语法糖/">学习笔记：class 语法糖</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在前面一篇原型与继承的学习笔记中，最后使用基于原型的范式实现了继承。而 ES6 引入的 <code>class</code> 关键字则提供了更加漂亮的语法，与 Java 等语言有点类似。还是以 <code>Rabbit</code> 继承 <code>Animal</code> 为例，使用 <code>class</code> 关键字的写法：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>(name</span><br><span class="line">  - speed) &#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name;</span><br><span class="line">    <span class="keyword">this</span>.speed = speed;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 静态方法是从属于 class 本身的，而非其原型。静态属性同理。</span></span><br><span class="line">  <span class="comment">// 等同于：</span></span><br><span class="line">  <span class="comment">// Animale.compare = function(animalA</span></span><br><span class="line">  - animalB) &#123; ... &#125;</span><br><span class="line">  <span class="keyword">static</span> compare(animalA</span><br><span class="line">  - animalB) &#123;</span><br><span class="line">    <span class="keyword">return</span> animalA.speed - animalB.speed;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 成员方法是从属于 class 的原型的</span></span><br><span class="line">  <span class="comment">// 等同于：</span></span><br><span class="line">  <span class="comment">// Animal.prototype.run = function(speed) &#123; ... &#125;</span></span><br><span class="line">  run(speed) &#123;</span><br><span class="line">    <span class="keyword">this</span>.speed += speed;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> run with speed <span class="subst">$&#123;<span class="keyword">this</span>.speed&#125;</span>`</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  stop() &#123;</span><br><span class="line">    <span class="keyword">this</span>.speed = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> stopped`</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rabbit</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">constructor</span>(name</span><br><span class="line">  - speed</span><br><span class="line">  - earLength) &#123;</span><br><span class="line">    <span class="keyword">super</span>(name</span><br><span class="line">    - speed); <span class="comment">// 必须使用 super 调用父级构造器，然后才能访问 this</span></span><br><span class="line">    <span class="keyword">this</span>.earLength = earLength;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  hide() &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> hide`</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  stop() &#123;</span><br><span class="line">    <span class="comment">// 通过 super.method() 可以调用父类的方法</span></span><br><span class="line">    <span class="keyword">super</span>.stop();</span><br><span class="line">    <span class="keyword">this</span>.hide();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">typeof</span> Animal); <span class="comment">// function</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="keyword">typeof</span> Rabbit); <span class="comment">// function</span></span><br></pre></td></tr></table></figure></p>
+<p>需要注意的几点：</p>
+<ul>
+<li><code>class</code> 只是语法糖，在语言层面并未引入新的基本单元，从 <code>typeof Animal</code> 的结果 <code>function</code> 可以看到，本质上依然是函数。</li>
+<li>子类的构造器 <code>constructor</code> 在访问 <code>this</code> 之前必须先调用父类构造器，即调用 <code>super(...)</code>。</li>
+<li>为了更多地复用代码，在子类中可以使用 <code>super.method()</code> 调用父类的方法。</li>
+<li>声明的成员方法 <code>run</code>，<code>stop</code>， <code>hide</code> 都是定义在其原型上。以 <code>stop</code> 方法为例，等同于： <code>Animal.prototype = function () {...}</code>。</li>
+<li>声明的静态方法则是定义在 <code>class</code> 函数本身上，而非其原型上。</li>
+<li><code>extends</code> 关键字实际上做了以下工作：<ul>
+<li>将 <code>Rabbit.prototype</code> 的原型设为 <code>Animal.prototype</code>，使得 <code>Rabbit</code> 的实例可以继承 <code>Animal</code> 的实例属性</li>
+<li>将 <code>Rabbit</code> 的原型设为 <code>Animal</code>，使得 <code>Rabbit</code> 本身可以继承 <code>Animal</code> 的静态属性</li>
+</ul>
+</li>
+<li><code>class</code> 内声明的方法之间没有逗号 <code>,</code>。</li>
+</ul>
+<h2 id="静态属性与实例属性"><a href="#静态属性与实例属性" class="headerlink" title="静态属性与实例属性"></a>静态属性与实例属性</h2><p>在 JavaScript 中，结合 <code>class</code> 关键字，用类似 Java 中面向对象的思想来理解静态属性与实例属性。静态属性是挂载在 <code>class</code> 本身上的，而实例属性是挂载在原型 <code>prototype</code> 上的。我们以内置的 <code>Object</code> 和 <code>Date</code> 这两个对象为例来说明，如下图所示：</p>
+<p><img src="images/object-date-inheritance.png" alt></p>
+<p>从上图可以清晰的看到：<code>Object</code> 和 <code>Date</code> 两者本身是不存在继承关系的，它们只是通过彼此的原型实现继承关系，仅此而已。</p>
+<h3 id="Object-的静态属性"><a href="#Object-的静态属性" class="headerlink" title="Object 的静态属性"></a>Object 的静态属性</h3><ul>
+<li><code>Object.name</code></li>
+<li><code>Object.length</code></li>
+<li><code>Object.prototype</code></li>
+<li><code>Object.assign</code></li>
+<li><code>Object.getOwnPropertyDescriptor</code></li>
+<li><code>Object.getOwnPropertyDescriptors</code></li>
+<li><code>Object.getOwnPropertyNames</code></li>
+<li><code>Object.getOwnPropertySymbols</code></li>
+<li><code>Object.is</code></li>
+<li><code>Object.preventExtensions</code></li>
+<li><code>Object.seal</code></li>
+<li><code>Object.create</code></li>
+<li><code>Object.defineProperties</code></li>
+<li><code>Object.defineProperty</code></li>
+<li><code>Object.freeze</code></li>
+<li><code>Object.getPrototypeOf</code></li>
+<li><code>Object.setPrototypeOf</code></li>
+<li><code>Object.isExtensible</code></li>
+<li><code>Object.isFrozen</code></li>
+<li><code>Object.isSealed</code></li>
+<li><code>Object.keys</code></li>
+<li><code>Object.entries</code></li>
+<li><code>Object.values</code></li>
+</ul>
+<h3 id="Object-的实例属性"><a href="#Object-的实例属性" class="headerlink" title="Object 的实例属性"></a>Object 的实例属性</h3><ul>
+<li><code>constructor</code></li>
+<li><code>__defineGetter__</code></li>
+<li><code>__defineSetter__</code></li>
+<li><code>hasOwnProperty</code></li>
+<li><code>__lookupGetter__</code></li>
+<li><code>__lookupSetter__</code></li>
+<li><code>isPrototypeOf</code></li>
+<li><code>propertyIsEnumerable</code></li>
+<li><code>toString</code></li>
+<li><code>valueOf</code></li>
+<li><code>__proto__</code></li>
+<li><code>toLocaleString</code></li>
+</ul>
+<h3 id="Date-的静态属性"><a href="#Date-的静态属性" class="headerlink" title="Date 的静态属性"></a>Date 的静态属性</h3><ul>
+<li><code>Date.length</code></li>
+<li><code>Date.name</code></li>
+<li><code>Date.prototype</code></li>
+<li><code>Date.now</code></li>
+<li><code>Date.parse</code></li>
+<li><code>Date.UTC</code></li>
+</ul>
+<h3 id="Date-的实例属性"><a href="#Date-的实例属性" class="headerlink" title="Date 的实例属性"></a>Date 的实例属性</h3><ul>
+<li><code>constructor</code></li>
+<li><code>toString</code></li>
+<li><code>toDateString</code></li>
+<li><code>toTimeString</code></li>
+<li><code>toISOString</code></li>
+<li><code>toUTCString</code></li>
+<li><code>toGMTString</code></li>
+<li><code>getDate</code></li>
+<li><code>setDate</code></li>
+<li><code>getDay</code></li>
+<li><code>getFullYear</code></li>
+<li><code>setFullYear</code></li>
+<li><code>getHours</code></li>
+<li><code>setHours</code></li>
+<li><code>getMilliseconds</code></li>
+<li><code>setMilliseconds</code></li>
+<li><code>getMinutes</code></li>
+<li><code>setMinutes</code></li>
+<li><code>getMonth</code></li>
+<li><code>setMonth</code></li>
+<li><code>getSeconds</code></li>
+<li><code>setSeconds</code></li>
+<li><code>getTime</code></li>
+<li><code>setTime</code></li>
+<li><code>getTimezoneOffset</code></li>
+<li><code>getUTCDate</code></li>
+<li><code>setUTCDate</code></li>
+<li><code>getUTCDay</code></li>
+<li><code>getUTCFullYear</code></li>
+<li><code>setUTCFullYear</code></li>
+<li><code>getUTCHours</code></li>
+<li><code>setUTCHours</code></li>
+<li><code>getUTCMilliseconds</code></li>
+<li><code>setUTCMilliseconds</code></li>
+<li><code>getUTCMinutes</code></li>
+<li><code>setUTCMinutes</code></li>
+<li><code>getUTCMonth</code></li>
+<li><code>setUTCMonth</code></li>
+<li><code>getUTCSeconds</code></li>
+<li><code>setUTCSeconds</code></li>
+<li><code>valueOf</code></li>
+<li><code>getYear</code></li>
+<li><code>setYear</code></li>
+<li><code>toJSON</code></li>
+<li><code>toLocaleString</code></li>
+<li><code>toLocaleDateString</code></li>
+<li><code>toLocaleTimeString</code>.</li>
+<li><code>Symbol.toPrimitive</code>.</li>
+</ul>
+<h2 id="instanceof-运算符"><a href="#instanceof-运算符" class="headerlink" title="instanceof 运算符"></a><code>instanceof</code> 运算符</h2><p><code>instanceof</code> 运算符的语法如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">obj <span class="keyword">instanceof</span> Class</span><br></pre></td></tr></table></figure></p>
+<p>这一运算符的本质其实是判断 <code>Class.prototype</code> 是否在 <code>obj</code> 对象的原型链上。除此之外，对于那些部署了 <code>Symbol.hasInstance</code> 静态方法的类，还要额外考虑。<br><code>obj instanceof Class</code> 这一算法的工作过程大致如下：</p>
+<ol>
+<li><p>如果某个类部署了 <code>Symbol.hasInstance</code> 静态方法，那么直接使用该方法。比如下面这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// assume anything that canEat is an animal</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> [<span class="built_in">Symbol</span>.hasInstance](obj) &#123;</span><br><span class="line">    <span class="keyword">if</span> (obj.canEat) <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> obj = &#123; <span class="attr">canEat</span>: <span class="literal">true</span> &#125;;</span><br><span class="line">alert(obj <span class="keyword">instanceof</span> Animal); <span class="comment">// true: Animal[Symbol.hasInstance](obj) is called</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果某个类没有部署 <code>Symbol.hasInstance</code> 静态方法（大多数类都没有部署）。那么开始检查这个类的原型链，看 <code>Class.prototype</code> 是否等于原型链上的某个原型，即做如下比较：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">obj.__proto__ === Class.prototype</span><br><span class="line">obj.__proto__.__proto__ === Class.prototype</span><br><span class="line">obj.__proto__.__proto__.__proto__ === Class.prototype</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>还是以 <code>Rabbit</code> 继承 <code>Animal</code> 为例，来看看 <code>instanceof</code> 的工作过程：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rabbit</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> rabbit = <span class="keyword">new</span> Rabbit();</span><br><span class="line">alert(rabbit <span class="keyword">instanceof</span> Animal); <span class="comment">// true</span></span><br><span class="line"><span class="comment">// rabbit.__proto__ === Rabbit.prototype</span></span><br><span class="line"><span class="comment">// rabbit.__proto__.__proto__ === Animal.prototype (match!)</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的代码中，<code>rabbit</code> 实例的原型链是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rabbit -&gt; Rabbit.prototpye -&gt; Animal.prototype -&gt; Object.prototype -&gt; null</span><br></pre></td></tr></table></figure></p>
+<p><code>rabbit instanceof Animal</code> 执行的操作是在上面的原型链中查找，看 <code>Animal.prototype</code> 是否出现在原型链中，如果是则返回 <code>true</code>，否则返回 <code>false</code>。</p>
+<h2 id="类型检查"><a href="#类型检查" class="headerlink" title="类型检查"></a>类型检查</h2><p>在 JavaScript 中，主要有 3 种方法可以用来做类型检查：</p>
+<ul>
+<li><p><code>typeof</code> 主要用于检查基本数据类型，返回一个说明了所属类型的字符串。比如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alert(<span class="keyword">typeof</span> <span class="number">1</span>); <span class="comment">// number</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>{}.toString</code> 用于检查基本数据类型，内置对象，以及部署了 <code>Symbol.toStringTag</code> 属性的对象。可以看做是增强版的 <code>typeof</code> 。示例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 对于基本数据类型</span></span><br><span class="line"><span class="keyword">let</span> s = <span class="built_in">Object</span>.prototype.toString;</span><br><span class="line"></span><br><span class="line">alert( s.call(<span class="number">123</span>) ); <span class="comment">// [object Number]</span></span><br><span class="line">alert( s.call(<span class="literal">null</span>) ); <span class="comment">// [object Null]</span></span><br><span class="line">alert( s.call(alert) ); <span class="comment">// [object Function]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于部署了 Symbol.toStringTag 的对象</span></span><br><span class="line"><span class="keyword">let</span> user = &#123;</span><br><span class="line">  [<span class="built_in">Symbol</span>.toStringTag]: <span class="string">"User"</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">alert( &#123;&#125;.toString.call(user) ); <span class="comment">// [object User]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于特定环境的内置对象和类</span></span><br><span class="line">alert( <span class="built_in">window</span>[<span class="built_in">Symbol</span>.toStringTag]); <span class="comment">// window</span></span><br><span class="line">alert( XMLHttpRequest.prototype[<span class="built_in">Symbol</span>.toStringTag] ); <span class="comment">// XMLHttpRequest</span></span><br><span class="line"></span><br><span class="line">alert( &#123;&#125;.toString.call(<span class="built_in">window</span>) ); <span class="comment">// [object Window]</span></span><br><span class="line">alert( &#123;&#125;.toString.call(<span class="keyword">new</span> XMLHttpRequest()) ); <span class="comment">// [object XMLHttpRequest]</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>instanceof</code> 用于对检查对象数据类型，尤其用于检查对象继承关系。</p>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cddbysj.github.io/2019/04/04/学习笔记：class 语法糖/" data-id="cju7rj7k10000fkvgu8vz7qcr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面向对象/">面向对象</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-家具木材指南" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/04/03/家具木材指南/" class="article-date">
+  <time datetime="2019-04-03T08:24:20.000Z" itemprop="datePublished">2019-04-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/03/家具木材指南/">家具木材指南</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>a guide to furniture wood<br>maple, cherry, oak or other hardwood plywood.<br>there is a lot of advantage to using plywood instead of solid lumber.<br>in the US at least. it is fairly inexpensive. plywood is very strong and stable. You don’t have to worry about expansion and contraction, it won’t warp.and it’s a great option for large surfaces such as tabletop.<br>it’s equally strong in either direction. so you don’t need to worry about the grain direction besides what look best.<br>There’s a few disadvantages to using plywood.<br>For one, a four by eight sheet of plywood is heavy and difficult to move around manage alone.However most home  centers are able to cut it down to smaller pieces for you.<br>Second,while the face of plywood looks great, the edges can be a little   bit of an eyesore</p>
+<p>medium density fiberboard - MDF<br>medium density fiberboard is commonly used in knockdown furniture, like what you might assemble from IKEA or other retailers. It’s usually covered with a laminate or a veneer.The material itself is super easy to machine and work with, it cut like butter, and edge profiles rout out easily. It’s a great option  for decorative interior projects that you’re gonna paint, and you don’t have to worry about it splintering the way wood or plywood can.<br>MDF can be a bit fragile especially near edges where it can be collapes like cardboard if you’re not careful.</p>
+<h2 id="译文"><a href="#译文" class="headerlink" title="译文"></a>译文</h2><p>家具木材指南<br>家具上使用的木材，主要可以分为 3 个大类：</p>
+<ul>
+<li>实心木材</li>
+<li>胶合板</li>
+<li>密度板</li>
+</ul>
+<p>你当然可以选择枫木，樱桃木，橡木或其他硬木胶合板。<br>使用胶合板代替实心木材有很多优点。<br>至少在美国。它相当便宜。胶合板非常坚固稳定。您不必担心膨胀和收缩，它不会翘曲。对于桌面等大型表面来说，它是一个很好的选择。<br>它在任何一个方向都同样强大。所以除了看起来最好的外，你不需要担心纹理方向。<br>使用胶合板有一些缺点。<br>例如，一张四到八张的胶合板很重，很难单独移动。但是大多数家具中心都可以为你剪裁成小块。<br>其次，虽然胶合板的表面看起来很棒，但边缘可能会有点辣眼睛</p>
+<p>中密度纤维板 -  MDF<br>中密度纤维板通常用于击倒式家具，就像您可能从宜家或其他零售商处组装的那样。它通常用层压板或单板覆盖。材料本身非常容易加工和加工，切割它就像切割黄油一样，很容易切割出你想要的轮廓。对于您要涂漆的装饰性室内工程来说，这是一个很好的选择，您不必担心 MDF 会像木材或胶合板那样开裂。<br>MDF可能有点脆弱，特别是在边缘附近，如果你不小心它可以像纸板一样折叠。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://www.yt.jsproxy.tk/watch?v=y7gLvEYoBu0" target="_blank" rel="noopener">如何选择家具的木材 - youtube 上的一个木匠</a></p>
+<p><a href="https://home-dot-howstuffworks-dot-com.ext.jsproxy.tk/home-improvement/home-diy/projects/guide-to-furniture-woods-ga.htm" target="_blank" rel="noopener">家具木材科普 - HowStuffWorks</a></p>
+<p><a href="https://www-dot-lushome-dot-com.ext.jsproxy.tk/best-types-wood-furniture-modern-interior-design/165425" target="_blank" rel="noopener">几种适合现代家具的实心木材</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://cddbysj.github.io/2019/04/03/家具木材指南/" data-id="cju7rj7ne0001fkvg5v5dkmj4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/木材/">木材</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/装修/">装修</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-学习笔记：原型与继承" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/04/02/学习笔记：原型与继承/" class="article-date">
@@ -157,7 +425,7 @@
       <a data-url="https://cddbysj.github.io/2019/04/02/学习笔记：原型与继承/" data-id="cjtzjuiao0000d8vgic1fg78x" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/面向对象/">面向对象</a></li></ul>
 
     </footer>
   </div>
@@ -456,7 +724,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git-Bash/">Git Bash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备忘录/">备忘录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/宽松相等与严格相等/">宽松相等与严格相等</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/求值策略/">求值策略</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/精度丢失/">精度丢失</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git-Bash/">Git Bash</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/">JavaScript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/备忘录/">备忘录</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/学习笔记/">学习笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/宽松相等与严格相等/">宽松相等与严格相等</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/木材/">木材</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/求值策略/">求值策略</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/精度丢失/">精度丢失</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/装修/">装修</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/面向对象/">面向对象</a></li></ul>
     </div>
   </div>
 
@@ -466,7 +734,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Git-Bash/" style="font-size: 10px;">Git Bash</a> <a href="/tags/JavaScript/" style="font-size: 20px;">JavaScript</a> <a href="/tags/备忘录/" style="font-size: 10px;">备忘录</a> <a href="/tags/学习笔记/" style="font-size: 15px;">学习笔记</a> <a href="/tags/宽松相等与严格相等/" style="font-size: 10px;">宽松相等与严格相等</a> <a href="/tags/求值策略/" style="font-size: 10px;">求值策略</a> <a href="/tags/精度丢失/" style="font-size: 10px;">精度丢失</a>
+      <a href="/tags/Git-Bash/" style="font-size: 10px;">Git Bash</a> <a href="/tags/JavaScript/" style="font-size: 20px;">JavaScript</a> <a href="/tags/备忘录/" style="font-size: 10px;">备忘录</a> <a href="/tags/学习笔记/" style="font-size: 16.67px;">学习笔记</a> <a href="/tags/宽松相等与严格相等/" style="font-size: 10px;">宽松相等与严格相等</a> <a href="/tags/木材/" style="font-size: 10px;">木材</a> <a href="/tags/求值策略/" style="font-size: 10px;">求值策略</a> <a href="/tags/精度丢失/" style="font-size: 10px;">精度丢失</a> <a href="/tags/装修/" style="font-size: 10px;">装修</a> <a href="/tags/面向对象/" style="font-size: 13.33px;">面向对象</a>
     </div>
   </div>
 
@@ -488,23 +756,23 @@
       <ul>
         
           <li>
+            <a href="/2019/04/08/学习笔记：面向对象之混入/">学习笔记：面向对象之混入</a>
+          </li>
+        
+          <li>
+            <a href="/2019/04/04/学习笔记：class 语法糖/">学习笔记：class 语法糖</a>
+          </li>
+        
+          <li>
+            <a href="/2019/04/03/家具木材指南/">家具木材指南</a>
+          </li>
+        
+          <li>
             <a href="/2019/04/02/学习笔记：原型与继承/">学习笔记：原型与继承</a>
           </li>
         
           <li>
             <a href="/2019/04/02/学习笔记：对象的属性描述符/">学习笔记：对象的属性描述符</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/12/为什么-0-1-0-2-0-3/">为什么 0.1 + 0.2 !== 0.3</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/12/Git-Bash-常用命令集锦/">Git Bash 常用命令集锦</a>
-          </li>
-        
-          <li>
-            <a href="/2019/03/06/‘==’与'==='/">&#39;==&#39;与&#39;===&#39;</a>
           </li>
         
       </ul>
