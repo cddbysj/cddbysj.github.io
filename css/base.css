@@ -930,10 +930,10 @@ header {
     .article-footer .article-meta span {
       display: inline-block; }
     .article-footer .article-meta span:not(:last-child) {
-      margin-right: 3rem; }
+      margin-left: 5px; }
     .article-footer .article-meta span.span--tag {
       display: inline;
-      margin-right: 0; }
+      margin-right: 5px; }
     .article-footer .article-meta i {
       vertical-align: middle;
       color: #757575;
