@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>JavaScript 学习笔记：对象的属性描述符 | Bill&#39; Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="JavaScript,学习笔记,">
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="personal blog">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+    <link rel="stylesheet" href="/custom/style.css">
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Cddbysj</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          
+            <a href="/friends/" target="_self">
+              友链
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path>
+          
+            <a href="javascript:void(0);" v-else>抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/cddbysj" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>JavaScript 学习笔记：对象的属性描述符</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-04-02
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="JavaScript 学习笔记：对象的属性描述符"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <p>JavaScript 中的对象属性，并不只是简单的键值对，通过属性描述符 property descriptor ，我们可以更加灵活的配置对象属性以控制属性的行为，包括是否可枚举、是否可写、是否可配置，实现更强大的功能。实际上，对于对象而言，一共有 2 种属性：</p>
+<ul>
+<li>数据属性 data property</li>
+<li>访问属性 accessor property</li>
+</ul>
+<h2 id="数据属性"><a href="#数据属性" class="headerlink" title="数据属性"></a>数据属性</h2><p>通常我们见到的属性都是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 1</span></span><br><span class="line"><span class="keyword">const</span> user = &#123;</span><br><span class="line">  name: <span class="string">'Sheldon'</span>,</span><br><span class="line">  age: <span class="number">29</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>上面的 <code>name</code> 和 <code>age</code> 都是数据属性。</p>
+<h2 id="访问属性"><a href="#访问属性" class="headerlink" title="访问属性"></a>访问属性</h2><p>还有另一种形式，比如：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 2</span></span><br><span class="line"><span class="keyword">const</span> user = &#123;</span><br><span class="line">  name: <span class="string">'Bill'</span>,</span><br><span class="line">  surname: <span class="string">'Gates'</span>,</span><br><span class="line">  <span class="keyword">get</span> fullname() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> <span class="subst">$&#123;<span class="keyword">this</span>.surname&#125;</span>`</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="keyword">set</span> fullname(value) &#123;</span><br><span class="line">    [<span class="keyword">this</span>.name, <span class="keyword">this</span>.surname] = value.split(<span class="string">','</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">user.fullname <span class="comment">// Bill Gates</span></span><br><span class="line">user.fullname = <span class="string">'Sheldon Cooper'</span>;</span><br><span class="line">user.name <span class="comment">// Sheldon</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的 <code>name</code> 和 <code>surname</code> 是数据属性，<code>fullname</code> 则是访问属性。即凡是使用 <code>get prop()</code> <strong>或者</strong> <code>set prop()</code> 定义的属性，都是访问属性，不再是数据属性。</p>
+<h2 id="数据属性的描述符"><a href="#数据属性的描述符" class="headerlink" title="数据属性的描述符"></a>数据属性的描述符</h2><p>对于数据属性而言，其描述符由 4 个 <code>flag</code> 组成：</p>
+<ul>
+<li><code>value</code> 属性的值</li>
+<li><code>writable</code> 是否可写</li>
+<li><code>enumerable</code> 是否可枚举，在类似 <code>for...in</code> 遍历中是否忽略</li>
+<li><code>configurable</code> 是否可配置，即是否可以编辑描述符的 <code>flag</code></li>
+</ul>
+<p>对于使用字面量声明的对象属性而言，除了 <code>value</code> 之外的 3 个 <code>flag</code> 的默认值都为 <code>true</code>。使用 <code>Object.getOwnPropertyDescriptor(obj, prop)</code> 方法可以获取对象上某属性的描述符。比如获取上面代码片段 1 中 <code>user</code> 对象 <code>name</code> 属性的描述符：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 3</span></span><br><span class="line"><span class="keyword">const</span> descriptor = <span class="built_in">Object</span>.getOwnPropertyDescriptor(user, <span class="string">'name'</span>);</span><br><span class="line"><span class="comment">// &#123;</span></span><br><span class="line"><span class="comment">//   "value": "Sheldon",</span></span><br><span class="line"><span class="comment">//   "writable": true,</span></span><br><span class="line"><span class="comment">//   "enumerable": true,</span></span><br><span class="line"><span class="comment">//   "configurable": true</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>如果想要精确地控制属性的行为，使用 <code>Object.defineProperty(obj, prop, descriptor)</code> 方法。使用这种方式，如果属性的某个 <code>flag</code> 没有显式指定，则默认值将是 <code>false</code> 。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 4</span></span><br><span class="line"><span class="keyword">const</span> user = &#123;&#125;;</span><br><span class="line"><span class="built_in">Object</span>.defineProperty(user, <span class="string">'name'</span>, &#123;</span><br><span class="line">  value: <span class="string">'Sheldon'</span>,</span><br><span class="line">  writable: <span class="literal">true</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> descriptor = <span class="built_in">Object</span>.getOwnPropertyDescriptor(user, <span class="string">'name'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">JSON</span>.stringify(descriptor, <span class="literal">null</span>, <span class="number">2</span>));</span><br><span class="line"><span class="comment">// &#123;</span></span><br><span class="line"><span class="comment">//   "value": "Sheldon",</span></span><br><span class="line"><span class="comment">//   "writable": true,</span></span><br><span class="line"><span class="comment">//   "enumerable": false,</span></span><br><span class="line"><span class="comment">//   "configurable": false</span></span><br><span class="line"><span class="comment">// &#125;</span></span><br></pre></td></tr></table></figure></p>
+<p>可以看到，除了显式指定的 <code>writable</code> ，其他未指定的 <code>flag</code> 的都是默认为 <code>false</code>。</p>
+<h3 id="可枚举性"><a href="#可枚举性" class="headerlink" title="可枚举性"></a>可枚举性</h3><p>描述符的 <code>enumerable</code> 属性，称为“可枚举性”，如果该属性为 <code>false</code>，就表示某些操作会忽略当前属性。<br>目前，有四个操作会忽略 <code>enumerable</code> 为 <code>false</code> 的属性。</p>
+<ul>
+<li><code>for...in</code> 循环：只遍历对象自身的和继承的可枚举的属性。</li>
+<li><code>Object.keys()</code>：返回对象自身的所有可枚举的属性的键名。</li>
+<li><code>JSON.stringify()</code>：只串行化对象自身的可枚举的属性。</li>
+<li><code>Object.assign()</code>： 忽略 <code>enumerable</code> 为 <code>false</code> 的属性，只拷贝对象自身的可枚举的属性。</li>
+</ul>
+<h3 id="可配置性"><a href="#可配置性" class="headerlink" title="可配置性"></a>可配置性</h3><p>描述符的 <code>configurable</code> 属性，表示该属性的 <code>flag</code> 是否可配置，一旦设为 <code>false</code> 不可逆。用的很少。</p>
+<h2 id="访问属性的描述符"><a href="#访问属性的描述符" class="headerlink" title="访问属性的描述符"></a>访问属性的描述符</h2><p>访问属性的描述符不同于数据属性的描述符，没有 <code>value</code> 和 <code>writable</code> 这 2 个 <code>flag</code>，多了 <code>get</code> 和 <code>set</code>，所以一个访问属性的描述符可能有如下组成：</p>
+<ul>
+<li><code>get</code> – 无参数函数，当属性被读取时被调用</li>
+<li><code>set</code> – 单参数函数，当属性被设置时被调用</li>
+<li><code>enumerable</code> – 与数据属性一致</li>
+<li><code>configurable</code> – 与数据属性一致</li>
+</ul>
+<p>访问属性的 <code>getter/setter</code> 可以直接使用字面量声明（如上面的代码片段 2 所示），也可以使用 <code>Object.defineProperty</code>，如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 5</span></span><br><span class="line"><span class="keyword">const</span> user = &#123;</span><br><span class="line">  name: <span class="string">'Bill'</span>,</span><br><span class="line">  surname: <span class="string">'Gates'</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Object</span>.defineProperty(user, <span class="string">'fullname'</span>, &#123;</span><br><span class="line">  <span class="keyword">get</span>() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> <span class="subst">$&#123;<span class="keyword">this</span>.surname&#125;</span>`</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="keyword">set</span>(value) &#123;</span><br><span class="line">    [<span class="keyword">this</span>.name, <span class="keyword">this</span>.surname] = value.split(<span class="string">','</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<h3 id="getter-setter-应用"><a href="#getter-setter-应用" class="headerlink" title="getter/setter 应用"></a>getter/setter 应用</h3><p>使用 <code>get</code> 和 <code>set</code> 访问属性描述符，我们可以更加灵活控制属性的读写行为。比如对于 <code>user</code> 对象而言，可以限制 <code>name</code> 的长度：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 6</span></span><br><span class="line"><span class="keyword">const</span> user = &#123;</span><br><span class="line">  <span class="keyword">get</span> name() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>._name;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="keyword">set</span> name(value) &#123;</span><br><span class="line">    <span class="keyword">if</span> (value.length &gt; <span class="number">4</span>) &#123;</span><br><span class="line">      alert(<span class="string">'用户名长度不能超过 4 位'</span>);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>._name = value; <span class="comment">// 这里使用 this._name 是一种广泛的通用约定</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="数据属性或访问属性"><a href="#数据属性或访问属性" class="headerlink" title="数据属性或访问属性"></a>数据属性或访问属性</h2><p>需要注意的是，一个属性要么是数据属性，要么是访问属性，不能两者皆是。相应地，如果同时给属性设置 <code>value</code> 和 <code>get</code> 这 2 个 <code>flag</code> 会报错。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 7</span></span><br><span class="line"><span class="comment">// Error: Invalid property descriptor. Cannot both specify accessors and a value or writable attribute</span></span><br><span class="line"><span class="built_in">Object</span>.defineProperty(&#123;&#125;, <span class="string">'prop'</span>, &#123;</span><br><span class="line">  <span class="keyword">get</span>() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  value: <span class="number">1</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li><p><a href="http://es6.ruanyifeng.com/#docs/object#%E5%B1%9E%E6%80%A7%E7%9A%84%E5%8F%AF%E6%9E%9A%E4%B8%BE%E6%80%A7%E5%92%8C%E9%81%8D%E5%8E%86" target="_blank" rel="noopener">ES6 入门 - 阮一峰</a></p>
+</li>
+<li><p><a href="https://javascript.info/property-accessors" target="_blank" rel="noopener">Modern Javascript Tutorial</a></p>
+</li>
+</ul>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Bill Wen <br>
+        
+        原文链接 : <a href>https://cddbysj.github.io/passages/JavaScript 学习笔记：对象的属性描述符/</a><br>
+        版权声明 : 采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/JavaScript/">
+              #JavaScript
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/学习笔记/">
+              #学习笔记
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/为什么-0-1-0-2-0-3/" target="_self">为什么 0.1 + 0.2 !== 0.3</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/JavaScript 学习笔记：原型与继承/" target="_self">JavaScript 学习笔记：原型与继承</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 1, 10).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+      
+         
+          <script src="/custom/script.js"  async  ></script>
+        
+      
+    
+  </body>
+
+</html>

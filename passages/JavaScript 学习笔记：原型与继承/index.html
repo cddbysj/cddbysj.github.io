@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>JavaScript 学习笔记：原型与继承 | Bill&#39; Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="JavaScript,学习笔记,面向对象,">
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="personal blog">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+    <link rel="stylesheet" href="/custom/style.css">
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Cddbysj</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          
+            <a href="/friends/" target="_self">
+              友链
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path>
+          
+            <a href="javascript:void(0);" v-else>抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/cddbysj" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>JavaScript 学习笔记：原型与继承</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-04-02
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="JavaScript 学习笔记：原型与继承"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <p></p>
+<h2 id="原型"><a href="#原型" class="headerlink" title="原型"></a>原型</h2><p>每个 JavaScript 中的对象都有一个特殊的内部隐藏属性 <code>[[prototype]]</code>，它要么指向 <code>null</code>，要么指向另一个对象，我们称之为<strong>原型</strong>。当我们从一个对象上读取某个属性，如果在对象本身上没有找到，那么 JavaScript 引擎会尝试从它的原型中去寻找。</p>
+<p>原型属性 <code>[[prototype]]</code> 虽然是内部隐藏的属性，但是有一些方法可以获取到它。</p>
+<h3 id="proto"><a href="#proto" class="headerlink" title="__proto__"></a><code>__proto__</code></h3><p>其中之一是 <code>__proto__</code>，但是 <code>__proto__</code> 并不完全等同于原型，只是由于历史原因，各个浏览器包括 NodeJS 都部署了这一属性，实际开发中应该使用 ES 规范中的更现代的设置原型的方法，后面会提到。考虑如下代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 1</span></span><br><span class="line"><span class="keyword">const</span> animal = &#123;</span><br><span class="line">  eats: <span class="literal">true</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rabbit = &#123;</span><br><span class="line">  jumps: <span class="literal">true</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">rabbit.__proto__ = animal;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(rabbit.jumps); <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(rabbit.eats); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
+<p><code>rabbit</code> 对象本身没有 <code>eats</code> 属性，但是因为让它的原型指向了 <code>animal</code> 对象，这时我们可以说 <code>animal</code> 是 <code>rabbit</code> 的原型。所以引擎会在 <code>rabbit</code> 没有某个属性时从其原型 <code>animal</code> 上获取。</p>
+<p>因此，我们可以将许多有用，但是更加通用的属性放到抽象程度更高的对象中，显然，在这里是 <code>animal</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 2</span></span><br><span class="line"><span class="keyword">const</span> animal = &#123;</span><br><span class="line">  eats: <span class="literal">true</span>,</span><br><span class="line">  walk() &#123;</span><br><span class="line">    alert(<span class="string">"Animal walk"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rabbit = &#123;</span><br><span class="line">  jumps: <span class="literal">true</span>,</span><br><span class="line">  __proto__: animal</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// walk is taken from the prototype</span></span><br><span class="line">rabbit.walk(); <span class="comment">// Animal walk</span></span><br></pre></td></tr></table></figure></p>
+<p>现在 <code>rabbit</code> 通过原型，继承了 <code>animal</code> 的共同属性 <code>eats</code> 和 <code>walk</code>。原型链 prototype chain 还可以更长：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 代码片段 3</span></span><br><span class="line"><span class="keyword">const</span> animal = &#123;</span><br><span class="line">  eats: <span class="literal">true</span>,</span><br><span class="line">  walk() &#123;</span><br><span class="line">    alert(<span class="string">"Animal walk"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rabbit = &#123;</span><br><span class="line">  jumps: <span class="literal">true</span>,</span><br><span class="line">  __proto__: animal</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> longEar = &#123;</span><br><span class="line">  earLength: <span class="number">10</span>,</span><br><span class="line">  __proto__: rabbit</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// walk is taken from the prototype chain</span></span><br><span class="line">longEar.walk(); <span class="comment">// Animal walk</span></span><br><span class="line">alert(longEar.jumps); <span class="comment">// true (from rabbit)</span></span><br></pre></td></tr></table></figure></p>
+<p>现在，按照抽象程度由低到高形成了一条原型链：<code>longEar</code> -&gt; <code>rabbit</code> -&gt; <code>animal</code>。</p>
+<h3 id="原型链的限制"><a href="#原型链的限制" class="headerlink" title="原型链的限制"></a>原型链的限制</h3><p>对于原型链来说主要由下面 3 条限制：</p>
+<ol>
+<li>原型链不能构成环，否则引擎将会抛出错误，在上面的例子中，即不能再将 <code>animal</code> 的原型指向 <code>longEar</code>。</li>
+<li><code>__proto__</code> 的值类型要么是 <code>null</code>，要么是 <code>Object</code>，即另一个对象。所有基本类型的值会被忽略。</li>
+<li>一个对象只能有一个原型，即不能继承两个父级。</li>
+</ol>
+<h3 id="this-的值"><a href="#this-的值" class="headerlink" title="this 的值"></a><code>this</code> 的值</h3><p>当对象调用原型的方法时，<code>this</code> 的值是指代原型还是对象本身呢？下面的代码清晰的说明了这一问题：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> user = &#123;</span><br><span class="line">  name: <span class="string">"John"</span>,</span><br><span class="line">  surname: <span class="string">"Smith"</span>,</span><br><span class="line">  <span class="keyword">get</span> fullname() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> <span class="subst">$&#123;<span class="keyword">this</span>.surname&#125;</span>`</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="keyword">set</span> fullname(value) &#123;</span><br><span class="line">    [<span class="keyword">this</span>.name, <span class="keyword">this</span>.surname] = value.split(<span class="string">" "</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> admin = &#123;</span><br><span class="line">  name: <span class="string">"Norah"</span>,</span><br><span class="line">  surname: <span class="string">"Jones"</span>,</span><br><span class="line">  isAdmin: <span class="literal">true</span>,</span><br><span class="line">  __proto__: user</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(admin.fullname); <span class="comment">// Nora Jones</span></span><br><span class="line">admin.fullname = <span class="string">"Michael Jackson"</span>;</span><br><span class="line"><span class="built_in">console</span>.log(admin.fullname); <span class="comment">// Michael Jackson</span></span><br></pre></td></tr></table></figure></p>
+<p>不管某个方法是在对象本身上，还是在其原型上，<code>this</code> 永远指向 <code>.</code> 运算符前面的对象。</p>
+<h2 id="F-prototype"><a href="#F-prototype" class="headerlink" title="F.prototype"></a>F.prototype</h2><p>我们知道，对象除了可以使用字面量创建，还可以使用 <code>new F()</code> 形式的构造函数来创建。请注意，构造函数本质上依然是函数，JavaScript 中的每个函数都具有一个特殊的 <code>prototype</code> 属性。默认情况下，它是一个仅包含 <code>constructor</code> 属性的对象（不包括每个对象的隐藏属性 <code>[[prototype]]</code>，因为函数也是对象），其中 <code>constructor</code> 指向函数本身：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> F = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(F.prototype); <span class="comment">// &#123; constructor: f &#125;</span></span><br><span class="line"><span class="built_in">console</span>.log(F.prototype.constructor === F); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
+<p>如果我们让 <code>F.prototype</code> 指向一个对象，那么在使用 <code>new</code> 操作符调用构造函数 <code>F</code> 时，新创建的实例的原型 <code>[[prototype]]</code> 都将被指向这个对象。示例：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> animal = &#123;</span><br><span class="line">  eats: <span class="literal">true</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> Rabbit = <span class="function"><span class="keyword">function</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Rabbit.prototype = animal; <span class="comment">// 设置所有 Rabbit 创建的实例的原型为 animal</span></span><br><span class="line">Rabbit.prototype.construtor = Rabbit; <span class="comment">// 修正 Rabbit 原型的 constructor 的指向 (*)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rabbit = <span class="keyword">new</span> Rabbit(<span class="string">'white rabbit'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(rabbit.eats); <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(rabbit.__proto__ === animal); <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(rabbit.constructor === Rabbit); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的代码中，另一个需要注意的问题是 <code>F.prototype.constructor</code> 的值。改变构造函数 <code>F.prototype</code> 的默认指向，如果接下来（之前创建的实例不会受到影响）使用到其新创建的实例的 <code>construtor</code> 属性，会导致意想不到的错误。拿上面的例子来说，如果没有 <code>(*)</code> 这一行代码，<code>rabbit.constructor</code> 的值将会指向 <code>animal</code>，显然这在人意料之外，也不合理。所以，普遍的共识是：不要依赖 <code>constructor</code> 这一属性，因为它能被任意修改。</p>
+<p>有时候，我们需要使用某个实例的构造函数来创建一个实例，但是却不知道它的构造函数。这时可以这样做，但是需要小心：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> User = <span class="function"><span class="keyword">function</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> user = <span class="keyword">new</span> User(<span class="string">'Bill'</span>);</span><br><span class="line"><span class="keyword">const</span> user2 = <span class="keyword">new</span> user.constructor(<span class="string">'Sunny'</span>);</span><br><span class="line">alert(user2.name); <span class="comment">// Sunny</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的代码可以如正常运行，因为构造函数 <code>User</code> 的 <code>prototype</code> 的指向是默认的，指向其自身。假如修改一下代码，改变其指向：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> User = <span class="function"><span class="keyword">function</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">User.prototype = &#123;&#125;;</span><br><span class="line"><span class="keyword">const</span> user = <span class="keyword">new</span> User(<span class="string">'Bill'</span>);</span><br><span class="line"><span class="keyword">const</span> user2 = <span class="keyword">new</span> user.constructor(<span class="string">'Sunny'</span>); <span class="comment">// (*)</span></span><br><span class="line">alert(user2.name); <span class="comment">// undifined</span></span><br></pre></td></tr></table></figure></p>
+<p>我们来看看 <code>(*)</code> 这一行发生了什么：</p>
+<ol>
+<li>首先引擎会在 <code>user</code> 对象上查找 <code>constructor</code> 属性，没有找到。</li>
+<li>接着引擎会沿着原型链查找，<code>user</code> 的原型是 <code>User.prototype</code>，它是一个空对象 <code>{}</code>，没有找到。</li>
+<li>空对象 <code>{}</code> 的原型是 <code>Object.prototype</code>，而 <code>Object.prototype.constructor === Object</code>。所以实际执行的是 <code>new Object(&#39;Sunny&#39;)</code>，而内置的对象构造函数会忽略所有参数，所以得到如上结果。</li>
+</ol>
+<h2 id="Object-prototype"><a href="#Object-prototype" class="headerlink" title="Object.prototype"></a>Object.prototype</h2><p>让我们来看下面的代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;&#125;;</span><br><span class="line">alert(obj); <span class="comment">// [object Object]</span></span><br></pre></td></tr></table></figure></p>
+<p>为什么会有以上的输出？我们定义的对象是空的，是哪里来的代码生成了 <code>[object Object]</code> 这样的字符串信息？答案是内置的 <code>toString</code> 方法。通过字面量创建对象等同于使用对象构造函数 <code>new Object()</code>。而 <code>Object</code> 构造函数就像所有函数一样，也有一个 <code>prototype</code> 属性，它指向了一个很大的对象，上面部署了 <code>constructor</code>, <code>toString</code>, <code>valueOf</code> 等一系列所有对象通用的方法和属性。</p>
+<p>以下代码可以检查上面所说：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">alert(obj.__proto__ === <span class="built_in">Object</span>.prototype); <span class="comment">// true</span></span><br><span class="line"><span class="comment">// obj.toString === obj.__proto__.toString == Object.prototype.toString</span></span><br></pre></td></tr></table></figure></p>
+<p>另外，<code>Object.prototype</code> 这个内置的原型的 <code>[[prototype]]</code> 指向了谁呢？答案是 <code>null</code>:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alert(<span class="built_in">Object</span>.prototype.__proto__); <span class="comment">// null</span></span><br></pre></td></tr></table></figure></p>
+<p>其他抽象程度稍低的一些内置对象，比如 <code>Function</code>，<code>Array</code>，<code>Date</code> 等，也部署了一些方法在其原型上。这样每一个函数实例，数组实例或者日期实例，都可以使用一些内置于其原型上的方法了。这样设计的目的非常利于节省内存。下面这张图局部地说明了这种关系。</p>
+<p><img src="../images/native-prototypes-classes.png" alt="native-prototype-class"></p>
+<p>我们可以手动地验证一下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">alert(arr.__proto__ === <span class="built_in">Array</span>.prototype); <span class="comment">// true</span></span><br><span class="line">alert(arr.__proto__.__proto__ === <span class="built_in">Object</span>.prototype); <span class="comment">// true</span></span><br><span class="line">alert(arr.__proto__.__proto__.__proto__); <span class="comment">// null</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> f = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line">alert(f.__proto__ === <span class="built_in">Function</span>.prototype); <span class="comment">// true</span></span><br><span class="line">alert(f.__proto__.__proto__ === <span class="built_in">Object</span>.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="基本类型的原型"><a href="#基本类型的原型" class="headerlink" title="基本类型的原型"></a>基本类型的原型</h3><p>对于 <code>String</code>, <code>Number</code>, <code>Boolean</code> 这 3 种基本类型而言，当访问它们的属性时，会使用内置的构造函数（<code>比如 Number()</code>）创建一个临时的封装对象，然后访问这个临时封装对象原型上的属性或者方法，访问完成后临时对象就消失了，这一过程对我们来说都是不可见的。</p>
+<p>对于 <code>null</code> 和 <code>undefined</code> 而言，不会有自动创建临时封装对象这一过程，因为它们没有可用的属性或者方法，也就没有内置的原型。</p>
+<h2 id="设置原型的现代方法"><a href="#设置原型的现代方法" class="headerlink" title="设置原型的现代方法"></a>设置原型的现代方法</h2><p>我们应该只考虑以下 3 种现代的设置原型的方法：</p>
+<ul>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create" target="_blank" rel="noopener">Object.create(proto[, descriptors])</a> - 以给定的 <code>proto</code> 作为原型，创建一个新的空对象，<code>descriptors</code> 是可选参数，代表属性描述符。</p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf" target="_blank" rel="noopener">Object.getPrototypeOf(obj)</a> - 返回对象的原型。</p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf" target="_blank" rel="noopener">Object.setPrototypeOf(obj, proto)</a> - 将 <code>obj</code> 的原型设为 <code>proto</code>。</p>
+</li>
+</ul>
+<p>让我们用更标准、现代的方法改写前面的例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> animal = &#123;</span><br><span class="line">  eats: <span class="literal">true</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rabbit = <span class="built_in">Object</span>.create(animal, &#123;</span><br><span class="line">  jumps: &#123;</span><br><span class="line">    value: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">alert(rabbit.eats); <span class="comment">// true</span></span><br><span class="line">alert(<span class="built_in">Object</span>.getPrototypeOf(rabbit) === animal); <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">Object</span>.setPrototypeof(rabbit, &#123;&#125;); <span class="comment">// 改变 rabbit 的原型，使其原型为一个空对象</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="使用原型方法进行浅拷贝"><a href="#使用原型方法进行浅拷贝" class="headerlink" title="使用原型方法进行浅拷贝"></a>使用原型方法进行浅拷贝</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> origin = &#123;...&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> clone = <span class="built_in">Object</span>.create(<span class="built_in">Object</span>.getPrototypeOf(origin), <span class="built_in">Object</span>.getOwnPropertyDescriptors(origin));</span><br></pre></td></tr></table></figure>
+<p>上面的代码，以源对象的原型为原型，加上源对象的所有属性描述符选项，复制了所有源对象的属性，不管是可枚举属性还是不可枚举属性，数据属性还是访问属性，也包括了 <code>Symbol</code> 属性；同时有着相同的原型。</p>
+<p>让我们看一个详细的例子：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 源对象</span></span><br><span class="line"><span class="keyword">const</span> origin = <span class="built_in">Object</span>.create(<span class="literal">null</span>, &#123;</span><br><span class="line">  <span class="string">'name'</span>: &#123;</span><br><span class="line">    value: <span class="string">'Sheldon'</span>,</span><br><span class="line">    writable: <span class="literal">true</span>,</span><br><span class="line">    enumerable: <span class="literal">true</span>,</span><br><span class="line">    configurable: <span class="literal">true</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">'surname'</span>: &#123;</span><br><span class="line">    value: <span class="string">'Cooper'</span>,</span><br><span class="line">    writable: <span class="literal">true</span>,</span><br><span class="line">    enumerable: <span class="literal">true</span>,</span><br><span class="line">    configurable: <span class="literal">true</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">'fullname'</span>: &#123;</span><br><span class="line">    <span class="keyword">get</span>() &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> <span class="subst">$&#123;<span class="keyword">this</span>.surname&#125;</span>`</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="keyword">set</span>(value) &#123;</span><br><span class="line">      [<span class="keyword">this</span>.name, <span class="keyword">this</span>.surname] = value.split(<span class="string">' '</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  [<span class="built_in">Symbol</span>(<span class="string">'id'</span>)]: &#123;</span><br><span class="line">    value: <span class="number">9527</span>,</span><br><span class="line">    writable: <span class="literal">false</span>,</span><br><span class="line">    configurable: <span class="literal">true</span>,</span><br><span class="line">    enumerable: <span class="literal">true</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">'toString'</span>: &#123;</span><br><span class="line">    value: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">'custom toString!'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    writable: <span class="literal">true</span>,</span><br><span class="line">    enumerable: <span class="literal">false</span>,</span><br><span class="line">    configurable: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 浅拷贝</span></span><br><span class="line"><span class="keyword">const</span> clone = <span class="built_in">Object</span>.create(<span class="built_in">Object</span>.getPrototypeOf(origin), <span class="built_in">Object</span>.getOwnPropertyDescriptors(origin));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 可枚举属性和 Symbol 属性复制成功</span></span><br><span class="line"><span class="built_in">console</span>.log(clone); <span class="comment">// &#123; name: 'Sheldon', surname: 'Cooper', [Symbol(id)]: 9527 &#125;</span></span><br><span class="line"><span class="comment">// 不可枚举属性复制成功</span></span><br><span class="line"><span class="built_in">console</span>.log(clone.toString()); <span class="comment">// custom toString!</span></span><br><span class="line"><span class="comment">// 访问属性复制成功</span></span><br><span class="line"><span class="built_in">console</span>.log(clone.fullname); <span class="comment">// Sheldon Cooper</span></span><br><span class="line"><span class="comment">// 原型复制成功</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">Object</span>.getPrototypeOf(clone) === <span class="literal">null</span>); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
+<p>上面代码的源对象是一个出于演示目的而定制的，包含了可枚举属性和不可枚举属性，数据属性和访问属性，以及 <code>Symbol</code> 属性，从最后的打印结果可以看到，拷贝对象全部成功地复制了过来。</p>
+<h3 id="不要轻易在初始化更改原型设置"><a href="#不要轻易在初始化更改原型设置" class="headerlink" title="不要轻易在初始化更改原型设置"></a>不要轻易在初始化更改原型设置</h3><p>以上面的代码为例，如果我们在一开始让 <code>rabbit</code> 以 <code>animal</code> 为原型，接下来不要轻易更改 <code>rabbit</code> 的原型，因为引擎会对已有的原型继承做很多属性读取之类的优化，更改原型会破坏这些已有的优化，导致运行速度变慢。</p>
+<h3 id="纯字典对象"><a href="#纯字典对象" class="headerlink" title="纯字典对象"></a>纯字典对象</h3><p>假设我们想要实现一个纯字典对象，即包含一切合法字符串为键的键值对，使用通常的字面量对象会有一个问题：有一个特殊的字符串 <code>__proto__</code> 无法如预期般奏效。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> dictionary = &#123;</span><br><span class="line">  <span class="string">'__proto__'</span>: <span class="string">'some value'</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">alert(dictionary.__proto__); <span class="comment">// [object Object]</span></span><br><span class="line">alert(dictionary.__proto__ === <span class="built_in">Object</span>.prototype); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
+<p>上面的属性读取无法得到预期的 <code>some value</code> 结果，因为通常字面量创建的对象，默认原型是 <code>Object.prototype</code> ，而因为历史原因 <code>__proto__</code> 这一特殊属性被当做访问原型的途径。如果将其赋值为基本类型值，赋值操作将会被忽略。</p>
+<p>如何解决上面的问题？有两种方式：</p>
+<ul>
+<li>使用 <code>Map</code>，通常这是更加推荐的做法。</li>
+<li>使用 <code>Object.create(null)</code> 从所有原型的顶端 <code>null</code> 继承，这样创建的对象是一个真正的纯对象，不会包含一般对象内置的 <code>toString</code>，<code>valueOf</code>，<code>__proto__</code> 等属性。</li>
+</ul>
+<h3 id="属性遍历方法比较"><a href="#属性遍历方法比较" class="headerlink" title="属性遍历方法比较"></a>属性遍历方法比较</h3><ul>
+<li><code>Object.keys(obj) / Object.values(obj) / Object.entries(obj)</code> – 返回一个包含对象自身的可枚举字符串属性的键 / 值 / 键值对的数组。不包含继承属性，不包含 <code>Symbol</code> 属性。</li>
+<li><code>Object.getOwnPropertySymbols(obj)</code> – 返回一个包含自身所有 <code>Symbol</code> 属性的数组。</li>
+<li><code>Object.getOwnPropertyNames(obj)</code> – 返回一个包含自身所有字符串属性的数组。</li>
+<li><code>Reflect.ownKeys(obj)</code> – 返回一个包含自身所有属性的数组。</li>
+<li><code>obj.hasOwnProperty(key)</code> - 如果自身（非继承）包含该属性，返回真。</li>
+<li><code>for...in</code> 循环 - 遍历所有可枚举的字符串属性，包括自身属性和继承属性。不包括不可枚举属性，不包括 <code>Symbol</code> 属性。</li>
+</ul>
+<h2 id="基于原型实现继承"><a href="#基于原型实现继承" class="headerlink" title="基于原型实现继承"></a>基于原型实现继承</h2><p>虽然 ES6 引入了 <code>class</code> 关键字，但那只是一种语法糖。JavaScript 中继承的实现本质上是基于原型的。原型继承的实现参考以下代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Animal</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Animal.prototype.eat = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> eats`</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">Animal.prototype.walk = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> walks`</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Rabbit</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Rabbit.prototype.walk = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span> bounces`</span>);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 让 Rabbit 继承 Animal</span></span><br><span class="line"><span class="built_in">Object</span>.setPrototypeOf(Rabbit.prototype, Animal.prototype);</span><br><span class="line"><span class="comment">// 或者这样写： Rabbit.prototype = Object.create(Animal.prototype);</span></span><br><span class="line"><span class="comment">// 不推荐写法： Rabbit.prototype.__proto__ = Object.prototype</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> rabbit = <span class="keyword">new</span> Rabbit(<span class="string">'white rabbit'</span>);</span><br><span class="line">rabbit.walk(); <span class="comment">// white rabbit bounces</span></span><br><span class="line">rabbit.eat(); <span class="comment">// white rabbit eats</span></span><br></pre></td></tr></table></figure></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Bill Wen <br>
+        
+        原文链接 : <a href>https://cddbysj.github.io/passages/JavaScript 学习笔记：原型与继承/</a><br>
+        版权声明 : 采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/JavaScript/">
+              #JavaScript
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/学习笔记/">
+              #学习笔记
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/面向对象/">
+              #面向对象
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/JavaScript 学习笔记：对象的属性描述符/" target="_self">JavaScript 学习笔记：对象的属性描述符</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/家具木材指南/" target="_self">家具木材指南</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 1, 10).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+      
+         
+          <script src="/custom/script.js"  async  ></script>
+        
+      
+    
+  </body>
+
+</html>
