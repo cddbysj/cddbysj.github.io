@@ -6,16 +6,14 @@
   <meta charset="utf-8">
   <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
   
-    <meta name="robots" content="noindex">
   
   
-  
-  <title>Bill&#39; Blog</title>
+  <title>同源政策与跨域问题 | Bill&#39; Blog</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, theme-bmw">
+    <meta name="keywords" content="浏览器,同源政策,">
   
 
   <script>
@@ -173,150 +171,166 @@
 </script>
 
       
-<div class="container home-index">
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
   
-  <div class="post">
-    <h1 class="article-title">
-      <a href="/passages/同源政策与跨域问题/">
-        <span>同源政策与跨域问题</span>
-      </a>
-    </h1>
-    <!-- PC端文章信息 -->
-    <div class="article-top-meta pc-view">
-      <span>
-        发布时间 : 2019-02-27
-      </span>
-    </div>
-    <!-- 移动端文章信息 -->
-    <div class="article-top-meta mobile-view">
-      <span>
-        发布 : 2019-02-27
-      </span>
-      
-      
-        <span>
-          浏览 : <span class="article-timer" data-identity="同源政策与跨域问题"></span>
-        </span>
-      
-    </div>
+
+<div class="post">
+  <h1 class="article-title">
+    <span>同源政策与跨域问题</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-02-27
+    </span>
     
-    <!-- 文章简介 -->
-    <div class="article-content">
-      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        <p>简单来说，为了保护用户的数据安全，浏览器规定，对于<strong>不同源</strong>的网页，它们之间以下的资源交互行为是被禁止的：</p>
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="同源政策与跨域问题"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h1 id="同源政策与跨域问题"><a href="#同源政策与跨域问题" class="headerlink" title="同源政策与跨域问题"></a>同源政策与跨域问题</h1><h2 id="什么是浏览器的同源政策？"><a href="#什么是浏览器的同源政策？" class="headerlink" title="什么是浏览器的同源政策？"></a>什么是浏览器的同源政策？</h2><p><a href="https://en.wikipedia.org/wiki/Same-origin_policy" target="_blank" rel="noopener">维基百科对同源政策的定义</a>。简单来说，为了保护用户的数据安全，浏览器规定，对于<strong>不同源</strong>的网页，它们之间以下的资源交互行为是被禁止的：</p>
 <ol>
 <li>持久化数据无法获取，包括 <code>Cookie</code>, <code>LocakStorage</code>, <code>IndexDB</code></li>
 <li><code>DOM</code> 无法获取</li>
 <li><code>AJAX</code> 请求不能发送</li>
 </ol>
-      </div>
-    </div>
-    <div class="article-footer">
-      <div class="article-meta pull-left">
-        <!-- 分类pc端可见 -->
-        <span class="pc-view">
-          
-        <span>
-          
-            <i class="iconfont icon-06tags"></i>标签:
-            
-              <span class="span--tag">
-                <a href="/tags/浏览器/">
-                  #浏览器
-                </a>
-              </span>
-            
-              <span class="span--tag">
-                <a href="/tags/同源政策/">
-                  #同源政策
-                </a>
-              </span>
-            
-                    
-        </span>
-      </span></div>
-      
-        <div class="article-meta pull-right">
-          <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="同源政策与跨域问题"></span>
-          </span>
-        </div>
-      
+<p>仔细想想，以上3种行为对于用户安全来说，都是非常危险的。持久化数据通常含有用户的身份信息、登录态信息；至于 <code>DOM</code> 和 <code>AJAX</code> 这两者的权限都可能导致网页被植入恶意代码。</p>
+<h3 id="同源的严格定义"><a href="#同源的严格定义" class="headerlink" title="同源的严格定义"></a>同源的严格定义</h3><p>如果说两个网页同源，是指以下 3 个部分都相同：</p>
+<ul>
+<li>协议</li>
+<li>主机</li>
+<li>端口</li>
+</ul>
+<p>举例来说，<code>http://www.example.com/dir/page.html</code> 这个网址，协议是 <code>http://</code>，域名是 <code>www.example.com</code>，端口是 <code>80</code>（默认端口可以省略）。它的同源情况如下。</p>
+<ul>
+<li><a href="http://www.example.com/dir2/other.html：同源" target="_blank" rel="noopener">http://www.example.com/dir2/other.html：同源</a></li>
+<li><a href="http://example.com/dir/other.html：不同源（域名不同）" target="_blank" rel="noopener">http://example.com/dir/other.html：不同源（域名不同）</a></li>
+<li><a href="http://v2.www.example.com/dir/other.html：不同源（域名不同）" target="_blank" rel="noopener">http://v2.www.example.com/dir/other.html：不同源（域名不同）</a></li>
+<li><a href="http://www.example.com:81/dir/other.html：不同源（端口不同）" target="_blank" rel="noopener">http://www.example.com:81/dir/other.html：不同源（端口不同）</a></li>
+</ul>
+<h3 id="不受同源政策限制的资源交互行为"><a href="#不受同源政策限制的资源交互行为" class="headerlink" title="不受同源政策限制的资源交互行为"></a>不受同源政策限制的资源交互行为</h3><p>需要明确的一点是，同源政策对于 <code>HTML</code> 标签是没有限制的，这使得网页可以从远程服务器获取资源文件，主要有以下标签：</p>
+<ul>
+<li><code>script</code> 标签用来获取远程脚本文件，JSONP 跨域方式就是利用了这一点</li>
+<li><code>link</code> 标签用来获取远程 CSS 文件</li>
+<li><code>image</code> 标签用来获取远程图片文件</li>
+<li><code>audio</code> 标签用来获取远程音频文件</li>
+<li><code>video</code> 标签用来获取远程视频文件</li>
+</ul>
+<h2 id="如何规避同源政策来实现数据获取？"><a href="#如何规避同源政策来实现数据获取？" class="headerlink" title="如何规避同源政策来实现数据获取？"></a>如何规避同源政策来实现数据获取？</h2><p>在实际开发中，需要突破同源政策的限制来获取数据，主要是在使用 <code>AJAX</code> 向非同源服务器发送请求的场合。主要使用下面的几种方式来规避同源政策获取数据：</p>
+<ol>
+<li>跨域资源共享</li>
+<li>JSONP</li>
+<li>服务器代理转发</li>
+<li>跨文档通信 Cross-document messaging。这是 HTML5 为了解决跨文档通信引入的新 API：<code>window.postMessage</code>，但是这种方式能获取的内容是作了严格限制的，原因仍然是出于安全考虑。</li>
+<li>WebSocket</li>
+</ol>
+<h3 id="跨域资源共享"><a href="#跨域资源共享" class="headerlink" title="跨域资源共享"></a>跨域资源共享</h3><p>即Cross-Origin Resource Sharing。这是一个很大的话题，而且基本由后端实现 CORS 的支持，详情见参考链接 3 和 4，两篇文章讲的非常清晰。</p>
+<h3 id="JSONP"><a href="#JSONP" class="headerlink" title="JSONP"></a>JSONP</h3><p>JSONP是服务器与客户端跨源通信的常用方法。最大特点就是简单适用，老式浏览器全部支持，服务器改造非常小。</p>
+<p>它的基本思想是，网页通过添加一个<code>&lt;script&gt;</code>元素，向服务器请求 JSON 数据，这种做法不受同源政策限制；服务器收到请求后，将数据放在一个指定名字的回调函数里传回来。</p>
+<p>首先，网页动态插入<code>&lt;script&gt;</code>元素，由它向跨源网址发出请求。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">addScriptTag</span>(<span class="params">src</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</span><br><span class="line">  script.setAttribute(<span class="string">"type"</span>,<span class="string">"text/javascript"</span>);</span><br><span class="line">  script.src = src;</span><br><span class="line">  <span class="built_in">document</span>.body.appendChild(script);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  addScriptTag(<span class="string">'http://example.com/ip?callback=foo'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Your public IP address is: '</span> + data.ip);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>上面代码通过动态添加<code>&lt;script&gt;</code>元素，向服务器<code>example.com</code>发出请求。注意，该请求的查询字符串有一个<code>callback</code>参数，用来指定回调函数的名字，这对于 JSONP 是必需的。</p>
+<p>服务器收到这个请求以后，会将数据放在回调函数的参数位置返回。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foo(&#123;</span><br><span class="line">  <span class="string">"ip"</span>: <span class="string">"8.8.8.8"</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>由于<code>&lt;script&gt;</code>元素请求的脚本，直接作为代码运行。这时，只要浏览器定义了<code>foo</code>函数，该函数就会立即调用。作为参数的 JSON 数据被视为 JavaScript 对象，而不是字符串，因此避免了使用<code>JSON.parse</code>的步骤。<br>此外， JSONP 的方式仅限于 <code>GET</code> 方法的网络请求。</p>
+<h3 id="架设代理服务器，转发请求"><a href="#架设代理服务器，转发请求" class="headerlink" title="架设代理服务器，转发请求"></a>架设代理服务器，转发请求</h3><p>架设一个同源的服务器，浏览器向该同源服务器发送 <code>AJAX</code> 请求，再由该服务器转发请求到外部非同源服务器。</p>
+<h3 id="跨文档通信"><a href="#跨文档通信" class="headerlink" title="跨文档通信"></a>跨文档通信</h3><h3 id="WebSocket"><a href="#WebSocket" class="headerlink" title="WebSocket"></a>WebSocket</h3><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><p><a href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="noopener">同源政策及其规避方法</a></p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy" target="_blank" rel="noopener">Same-origin policy</a></p>
+</li>
+<li><p><a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" target="_blank" rel="noopener">跨域资源共享 CORS 详解 - 阮一峰</a></p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener">CORS - MDN</a></p>
+</li>
+</ol>
     </div>
   </div>
   
-  <div class="post">
-    <h1 class="article-title">
-      <a href="/passages/Sass 快速入门/">
-        <span>Sass 快速入门</span>
-      </a>
-    </h1>
-    <!-- PC端文章信息 -->
-    <div class="article-top-meta pc-view">
-      <span>
-        发布时间 : 2018-05-14
-      </span>
-    </div>
-    <!-- 移动端文章信息 -->
-    <div class="article-top-meta mobile-view">
-      <span>
-        发布 : 2018-05-14
-      </span>
-      
-      
-        <span>
-          浏览 : <span class="article-timer" data-identity="Sass 快速入门"></span>
-        </span>
-      
-    </div>
-    
-    <!-- 文章简介 -->
-    <div class="article-content">
-      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        <p>Sass 是 CSS 的一个扩展，它使得 CSS 的使用更加优雅和强大。</p>
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Bill Wen <br>
+        
+        原文链接 : <a href>https://cddbysj.github.io/passages/同源政策与跨域问题/</a><br>
+        版权声明 : 采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议
+        </blockquote>
       </div>
     </div>
-    <div class="article-footer">
-      <div class="article-meta pull-left">
-        <!-- 分类pc端可见 -->
-        <span class="pc-view">
-          
-        <span>
-          
-            <i class="iconfont icon-06tags"></i>标签:
-            
-              <span class="span--tag">
-                <a href="/tags/CSS/">
-                  #CSS
-                </a>
-              </span>
-            
-              <span class="span--tag">
-                <a href="/tags/Sass/">
-                  #Sass
-                </a>
-              </span>
-            
-                    
-        </span>
-      </span></div>
-      
-        <div class="article-meta pull-right">
-          <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="Sass 快速入门"></span>
-          </span>
-        </div>
-      
-    </div>
-  </div>
+  
+  
   
 
-  <nav class="page-navigation">
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/浏览器/">
+              #浏览器
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/同源政策/">
+              #同源政策
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
     
-      <a href="/">上一页</a>
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/Sass 快速入门/" target="_self">Sass 快速入门</a>
+      </div>
     
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/JavaScript中的求值策略/" target="_self">JavaScript中的求值策略</a>
+        <i class="iconfont icon-next"></i>
+      </div>
     
   </nav>
+
+   
 
   
     <script defer>
@@ -391,7 +405,7 @@ const valineAPI = (() => {
 })()
 
 const calcAndWriteTimes = () => {
-  let isPost = false;
+  let isPost = true;
 
   let timerAllDOM = document.querySelectorAll(".article-timer");
 
@@ -446,6 +460,7 @@ if(true){
 }
 </script>
    
+
 </div>
 
 

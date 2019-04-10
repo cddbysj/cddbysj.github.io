@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+  
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="author" content="董沅鑫, yuanxin.me@gmail.com">
+  
+  
+  
+  <title>Sass 快速入门 | Bill&#39; Blog</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+    <meta name="keywords" content="CSS,Sass,">
+  
+
+  <script>
+    console.log('\n%c Hexo-theme-bmw v4.0 ' + '%c 🎉 https://github.com/dongyuanxin/theme-bmw 🎉\n' + '\n%c View demo online ' + '%c 🔍 https://godbmw.com/ 🔍  \n' , 'color: #fadfa3; background: #030307; padding:3px 0;', '', 'color: #fadfa3; background: #030307; padding:3px 0;', '');
+  </script>
+
+  
+    <meta name="description" content="personal blog">
+  
+
+  
+
+  
+    <link rel="icon" href="/images/favicon.ico">
+    <link rel="apple-touch-icon" href="/images/touch-icon.png">
+  
+
+  <link href="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/icon/iconfont.css">
+<link rel="stylesheet" href="/css/github-markdown.css">
+<link rel="stylesheet" href="/css/highlight.css">
+
+  <script src="/js/util.js"></script>
+<script src="/js/valine.min.js"></script>
+
+  
+    <link rel="stylesheet" href="/custom/style.css">
+  
+
+  
+    <link href="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/aplayer/1.10.1/APlayer.min.js" async></script>
+  
+
+  
+  
+  <script src="//cdn.bootcss.com/jquery/3.3.1/jquery.min.js" async></script>
+  
+  
+    <script src="//cdn.jsdelivr.net/npm/leancloud-storage@3.11.0/dist/av-min.js"></script>
+  
+
+</head>
+
+  <body>
+
+    
+
+    <div id="app">
+
+      <div class="header-wrap">
+  <header>
+    <div class="site-brand">
+      <div class="site-title">
+        <a href="/">Cddbysj</a>
+      </div>
+    </div>
+    <nav class="site-navigation">
+      <ul class="nav-menu">
+      
+        <li class="nav-item" data-path="/">
+          
+            <a href="/" target="_self">
+              主页
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          
+            <a href="/archives/" target="_self">
+              归档
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          
+            <a href="/categories/" target="_self">
+              分类
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          
+            <a href="/tags/" target="_self">
+              标签
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          
+            <a href="/about/" target="_self">
+              关于
+            </a>
+          
+        </li>
+      
+        <li class="nav-item" data-path>
+          
+            <a href="javascript:void(0);" v-else>抓到我</a>
+            <ul class="nav-menu--dropdown">
+              
+                <li>
+                  <a href="https://github.com/cddbysj" target="_blank">
+                    Github
+                  </a>
+                </li>
+              
+            </ul>
+          
+        </li>
+      
+      </ul>
+    </nav>
+    <i class="iconfont icon-menu"></i>
+  </header>
+</div>
+
+<script>
+  let links = document.querySelectorAll('.nav-item');
+  for(let link of links){
+    let childrenLink = link.querySelector('ul');
+    link.addEventListener('mouseenter', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown active";
+      }
+    })
+    link.addEventListener('mouseleave', () => {
+      if(childrenLink) {
+        childrenLink.className = "nav-menu--dropdown";
+      }
+    })
+  }
+  let rootRealPath = getRealPath(window.location.pathname, true);
+  for(let link of links) {
+    let linkPath = link.getAttribute("data-path");
+    if(linkPath && getRealPath(linkPath, true) === rootRealPath) {
+      link.className = "nav-item hover";
+    }
+  }
+
+  let iconMenu = document.querySelector("i.iconfont.icon-menu"),
+    iconMenuClicked = false;
+  let navDOM = document.querySelector("nav.site-navigation");
+  iconMenu.addEventListener("click", () => {
+    iconMenuClicked 
+      ? navDOM.className = "site-navigation active"
+      : navDOM.className = "site-navigation";
+    iconMenuClicked = !iconMenuClicked;
+  })
+</script>
+
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
+  
+
+<div class="post">
+  <h1 class="article-title">
+    <span>Sass 快速入门</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2018-05-14
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="Sass 快速入门"></span>
+      </span>
+    
+  </div>
+
+  
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <h1 id="Sass快速入门"><a href="#Sass快速入门" class="headerlink" title="Sass快速入门"></a>Sass快速入门</h1><h2 id="What-is-Sass"><a href="#What-is-Sass" class="headerlink" title="What is Sass?"></a>What is Sass?</h2><p>Sass 是 CSS 的一个扩展，它使得 CSS 的使用更加优雅和强大</p>
+<h2 id="Why-Sass"><a href="#Why-Sass" class="headerlink" title="Why Sass?"></a>Why Sass?</h2><p>Sass 的以下特性使得 Sass 成为一个成熟、稳定、强大的 CSS 扩展语言解析器。</p>
+<h3 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h3><h4 id="变量声明"><a href="#变量声明" class="headerlink" title="变量声明"></a>变量声明</h4><p>在 Sass 中，使用 <code>$</code> 前缀符号来表明这是一个变量。同时，变量是存在作用域的。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$highlight-color</span>: <span class="number">#f90</span>;</span><br><span class="line"><span class="selector-tag">nav</span> &#123;</span><br><span class="line">	<span class="variable">$width</span>: <span class="number">100px</span>;</span><br><span class="line">	<span class="attribute">width</span>: <span class="variable">$width</span>;</span><br><span class="line">	<span class="attribute">color</span>: <span class="variable">$highlight-color</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 编译后 */</span></span><br><span class="line"><span class="selector-tag">nav</span> &#123;</span><br><span class="line">	<span class="attribute">width</span>: <span class="number">100px</span>;</span><br><span class="line">	<span class="attribute">color</span>: <span class="number">#f90</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="变量引用"><a href="#变量引用" class="headerlink" title="变量引用"></a>变量引用</h4><p>变量可以引用另一个变量<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$highlight-color</span>: <span class="number">#f90</span>;</span><br><span class="line"><span class="selector-class">.selected</span> &#123;</span><br><span class="line">	bodrer: <span class="number">1px</span> solid <span class="variable">$highlight-color</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="CSS规则嵌套"><a href="#CSS规则嵌套" class="headerlink" title="CSS规则嵌套"></a>CSS规则嵌套</h3><h4 id="选择器嵌套"><a href="#选择器嵌套" class="headerlink" title="选择器嵌套"></a>选择器嵌套</h4><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* sass */</span></span><br><span class="line"><span class="selector-id">#content</span> &#123;</span><br><span class="line">	<span class="attribute">background</span>: <span class="number">#555</span>;</span><br><span class="line">	<span class="selector-tag">article</span> &#123;</span><br><span class="line">		<span class="selector-tag">h1</span> &#123; <span class="attribute">color</span>: <span class="number">#333</span> &#125;</span><br><span class="line">		p &#123; margin-bottom: <span class="number">1.4em</span> &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	aside &#123; background: <span class="number">#eee</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* 编译后 */</span><br><span class="line"><span class="number">#c</span>ontent &#123; background: <span class="number">#555</span> &#125;</span><br><span class="line"><span class="number">#c</span>ontent article h1 &#123; color: <span class="number">#333</span> &#125;</span><br><span class="line"><span class="number">#c</span>ontent article p &#123; margin-bottom: <span class="number">1.4em</span> &#125;</span><br><span class="line"><span class="number">#c</span>ontent aside &#123; background: <span class="number">#eee</span> &#125;</span><br></pre></td></tr></table></figure>
+<h5 id="父选择器的标识符-amp"><a href="#父选择器的标识符-amp" class="headerlink" title="父选择器的标识符&amp;"></a>父选择器的标识符<code>&amp;</code></h5><p>Sass 提供父选择器的标识符 <code>&amp;</code> 主要是为了解决例如 <code>:hover</code> 等伪类的特殊情况。考虑下面这个情况：<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">article</span> <span class="selector-tag">a</span> &#123;</span><br><span class="line">	<span class="attribute">color</span>: blue;</span><br><span class="line">	:hover &#123; <span class="attribute">color</span>: red &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* 编译后，这与我们预期不符 */</span><br><span class="line">article a &#123; color: blue &#125;</span><br><span class="line">article a :hover &#123; color: red &#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用父选择器的标识符 <code>&amp;</code> 可以解决这个情况，<code>&amp;</code> 指代父选择器本身。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">article</span> <span class="selector-tag">a</span> &#123;</span><br><span class="line">	<span class="attribute">color</span>: blue;</span><br><span class="line">	&amp;:hover &#123; <span class="attribute">color</span>: red &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* 编译后 */</span><br><span class="line">article a &#123; color: blue &#125;</span><br><span class="line">article a:hover &#123; color: red &#125;</span><br></pre></td></tr></table></figure></p>
+<h5 id="群组选择器的嵌套"><a href="#群组选择器的嵌套" class="headerlink" title="群组选择器的嵌套"></a>群组选择器的嵌套</h5><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* sass */</span></span><br><span class="line"><span class="selector-class">.container</span> &#123;</span><br><span class="line">	<span class="selector-tag">h1</span>, <span class="selector-tag">h2</span>, <span class="selector-tag">h3</span> &#123; <span class="attribute">margin-bottom</span>: .<span class="number">8em</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line">nav, aside &#123;</span><br><span class="line">	a &#123; color: blue &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/* 编译后的css */</span><br><span class="line">.container h1, .container h2, .container h3 &#123; margin-bottom: .<span class="number">8em</span> &#125;</span><br><span class="line">nav a, aside a &#123; color: blue &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="属性嵌套"><a href="#属性嵌套" class="headerlink" title="属性嵌套"></a>属性嵌套</h4><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* sass */</span></span><br><span class="line"><span class="selector-tag">nav</span> &#123;</span><br><span class="line">	<span class="attribute">border</span>: &#123;</span><br><span class="line">		style: solid;</span><br><span class="line">		<span class="attribute">width</span>: <span class="number">1px</span>;</span><br><span class="line">		<span class="attribute">color</span>: <span class="number">#ccc</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 编译后的css */</span></span><br><span class="line"><span class="selector-tag">nav</span> &#123;</span><br><span class="line">	<span class="attribute">border-style</span>: solid;</span><br><span class="line">	<span class="attribute">border-width</span>: <span class="number">1px</span>;</span><br><span class="line">	<span class="attribute">border-color</span>: <span class="number">#ccc</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>属性和选择器嵌套是非常伟大的特性，因为它们不仅大大减少了你的编写量，而且通过视觉上的缩进使你编写的样式结构更加清晰，更易于阅读和开发。</p>
+<h3 id="导入"><a href="#导入" class="headerlink" title="导入"></a>导入</h3><p>在原生 CSS 中，有一个不常用的特性是 <code>@import</code> 规则，它允许在 <code>.css</code> 文件中导入其他的 <code>.css</code> 文件，但是这种导入的运行机制是：只有当执行到<br><code>@import</code> 语句时，浏览器才会去下载指定导入的 <code>.css</code> 文件，这导致页面加载起来会特别慢。</p>
+<p>Sass 中实现的 <code>@import</code> 规则在生成 <code>.css</code> 文件时就把相关文件导入进来。这意味着所有相关的样式被归纳到了同一个 CSS 文件中，而无需发起额外的下载请求。另外，所有在被导入文件中定义的变量和混合器均可在导入文件中使用。</p>
+<h4 id="嵌套导入"><a href="#嵌套导入" class="headerlink" title="嵌套导入"></a>嵌套导入</h4><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* blue-theme.scss文件 */</span></span><br><span class="line"><span class="selector-tag">aside</span> &#123;</span><br><span class="line">	<span class="attribute">color</span>: blue;</span><br><span class="line">	<span class="attribute">background</span>: white;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* base.css文件 */</span></span><br><span class="line"><span class="selector-class">.blue-theme</span> &#123; @<span class="keyword">import</span> <span class="string">"blue-theme"</span> &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="静默注释"><a href="#静默注释" class="headerlink" title="静默注释"></a>静默注释</h3><p>CSS 的标准注释会被保存在网页内，大多数时候这不是我们想要的结果。<br>Sass 提供了另一种类似 C 语言风格的注释，称之为<strong>静默注释</strong>，因为这类注释不会被保存在网页内，即浏览网页的用户看不到它们。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">	<span class="attribute">color</span>: <span class="number">#999</span>;</span><br><span class="line">	<span class="comment">/* 这是CSS的标准注释 */</span></span><br><span class="line">	<span class="attribute">background</span>: white;</span><br><span class="line">	<span class="comment">// 这是Sass提供的静默注释</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="混合器mixin"><a href="#混合器mixin" class="headerlink" title="混合器mixin"></a>混合器mixin</h3><p>Sass 提供了混合器来实现多组样式规则的复用。比如下面定义了一个简单的混合器，目的是添加跨浏览器的圆角边框。<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@<span class="keyword">mixin</span> rounded-corners &#123;</span><br><span class="line">	-moz-<span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">	-webkit-<span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">	<span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后你可以使用 <code>@include</code> 来使用混合器：<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.notice</span> &#123;</span><br><span class="line">	<span class="attribute">background-color</span>: green;</span><br><span class="line">	<span class="attribute">border</span>: <span class="number">2px</span> solid <span class="number">#00aa00</span>;</span><br><span class="line">	@<span class="keyword">include</span> rounded-corners;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//sass 最终生成：</span></span><br><span class="line"><span class="selector-class">.notice</span> &#123;</span><br><span class="line">	<span class="attribute">background-color</span>: green;</span><br><span class="line">	<span class="attribute">border</span>: <span class="number">2px</span> solid <span class="number">#00aa00</span>;</span><br><span class="line">	-moz-<span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">	-webkit-<span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">	<span class="attribute">border-radius</span>: <span class="number">5px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="何时使用混合器"><a href="#何时使用混合器" class="headerlink" title="何时使用混合器"></a>何时使用混合器</h4><p>利用混合器，可以很容易地在样式表的不同地方共享样式。如果你发现自己在不停地重复一段样式（严谨的描述是：几条样式规则），那就应该把这段样式构造成优良的混合器，尤其是这段样式本身就是一个逻辑单元，比如说是一组放在一起有意义的属性。</p>
+<p>判断一组属性是否应该组合成一个混合器，一条经验法则就是你能否为这个混合器想出一个好的名字。如果你能找到一个简洁的名字来描述这些属性修饰的样式，比如 <code>rounded-corners</code>, <code>fancy-font</code>, 或者 <code>no-bullets</code>，那么往往能够构造一个合适的混合器。如果你找不到，这时候构造一个混合器可能并不合适。</p>
+<p>混合器在某些方面跟 CSS 类选择器很像。都是让你给一大段样式命名，所以在选择使用哪个的时候可能会产生疑惑。最重要的区别就是类名是在 <code>html</code> 文件中应用的，而混合器是在样式表中应用的。这就意味着类名具有语义化含义，而不仅仅是一种展示性的描述：用来描述 <code>html</code> 元素的含义而不是 <code>html</code> 元素的外观。而另一方面，混合器是展示性的描述，用来描述一条 CSS 规则应用之后会产生怎样的效果。</p>
+<p>在之前的例子中，<code>.notice</code> 是一个有语义的类名。如果一个 <code>html</code> 元素有一个 <code>notice</code> 的类名，就表明了这个 <code>html</code> 元素的用途：向用户展示提醒信息。<code>rounded-corners</code> 混合器是展示性的，它描述了包含它的 CSS 规则最终的视觉样式，尤其是边框角的视觉样式。混合器和类配合使用可以写出整洁的 HTML和 CSS，因为使用语义化的类名也可以帮你避免重复使用混合器。为了保持你的 HTML 和 CSS 的易读性和可维护性，在写样式的过程中一定要铭记二者的区别。</p>
+<p>有时候仅仅把属性放在混合器中还远远不够，可喜的是，Sass 同样允许你把 CSS 规则放在混合器中。</p>
+<h4 id="混合器中的-CSS-规则"><a href="#混合器中的-CSS-规则" class="headerlink" title="混合器中的 CSS 规则"></a>混合器中的 CSS 规则</h4><p>混合器中不仅可以包含属性，也可以包含 CSS 规则，即包含选择器和选择器中的属性：<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义一个混合器</span></span><br><span class="line">@<span class="keyword">mixin</span> no-bullets &#123;</span><br><span class="line">	<span class="attribute">list-style</span>: none;</span><br><span class="line">	<span class="selector-tag">li</span> &#123;</span><br><span class="line">		<span class="attribute">list-style-type</span>: none;</span><br><span class="line">		<span class="attribute">list-style-image</span>: none;</span><br><span class="line">		<span class="attribute">margin-left</span>: <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 引用这个混合器</span></span><br><span class="line"><span class="selector-tag">ul</span><span class="selector-class">.plain</span> &#123;</span><br><span class="line">	<span class="attribute">color</span>: <span class="number">#444</span>;</span><br><span class="line">	@<span class="keyword">include</span> no-bullets;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 编译后的 css</span></span><br><span class="line"><span class="selector-tag">ul</span><span class="selector-class">.plain</span> &#123;</span><br><span class="line">	<span class="attribute">color</span>: <span class="number">#444</span>;</span><br><span class="line">	<span class="attribute">list-style</span>: none;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">ul</span><span class="selector-class">.plain</span> <span class="selector-tag">li</span> &#123;</span><br><span class="line">	<span class="attribute">list-style-type</span>: none;</span><br><span class="line">	<span class="attribute">list-style-image</span>: none;</span><br><span class="line">	<span class="attribute">margin-left</span>: <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="给混合器传参数，定制样式"><a href="#给混合器传参数，定制样式" class="headerlink" title="给混合器传参数，定制样式"></a>给混合器传参数，定制样式</h4><p>当 <code>@include</code> 混合器时，参数其实就是可以赋值给 CSS 属性值的变量。如果你写过 JavaScript，这种方式跟 JavaScrip t的 <code>function</code> 很像：<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@<span class="keyword">mixin</span> link-colors (<span class="variable">$normal</span>, <span class="variable">$hover</span>, <span class="variable">$visited</span>) &#123;</span><br><span class="line">	<span class="attribute">color</span>: <span class="variable">$normal</span>;</span><br><span class="line">	&amp;:hover &#123; <span class="attribute">color</span>: <span class="variable">$hover</span>; &#125;</span><br><span class="line">	&amp;:visited &#123; <span class="attribute">color</span>: <span class="variable">$visited</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 引入混合器</span></span><br><span class="line"><span class="selector-tag">a</span> &#123;</span><br><span class="line">	@<span class="keyword">include</span> link-colors(blue, red, green);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 编译后的CSS</span></span><br><span class="line"><span class="selector-tag">a</span> &#123; <span class="attribute">color</span>: blue; &#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">a</span>:hover &#123; <span class="attribute">color</span>: red; &#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">a</span>:visited &#123; <span class="attribute">color</span>: green; &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="给混合器设置默认参数值"><a href="#给混合器设置默认参数值" class="headerlink" title="给混合器设置默认参数值"></a>给混合器设置默认参数值</h4><p>为了在 <code>@include</code> 混合器时不必传入所有的参数值，可以给参数指定一个默认值。这个默认值可以是任何有效的 CSS 属性值，甚至是其他参数的引用。比如：<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义指定参数默认值的混合器</span></span><br><span class="line"><span class="comment">// 类似JavaScript中的函数</span></span><br><span class="line">@<span class="keyword">mixin</span> link-colors (</span><br><span class="line">		<span class="variable">$normal</span>,</span><br><span class="line">		<span class="variable">$hover</span>: <span class="variable">$normal</span>,</span><br><span class="line">		<span class="variable">$visited</span>: gray</span><br><span class="line">	)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="attribute">color</span>: <span class="variable">$normal</span>;</span><br><span class="line"></span><br><span class="line">	&amp;:hover &#123; <span class="attribute">color</span>: <span class="variable">$hover</span>; &#125;</span><br><span class="line"></span><br><span class="line">	&amp;:visited &#123; <span class="attribute">color</span>: <span class="variable">$visited</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 引用混合器</span></span><br><span class="line"><span class="selector-tag">a</span> &#123;</span><br><span class="line">	@<span class="keyword">include</span> link-colors(red);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 编译后的CSS</span></span><br><span class="line"><span class="selector-tag">a</span> &#123;</span><br><span class="line">	<span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">a</span>:hover &#123;</span><br><span class="line">	<span class="attribute">color</span>: red;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">a</span>:visited &#123;</span><br><span class="line">	<span class="attribute">color</span>: gray;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="选择器的继承"><a href="#选择器的继承" class="headerlink" title="选择器的继承"></a>选择器的继承</h3><p>选择器继承是说一个选择器可以继承为另一个选择器定义的所有样式。这个通过 <code>@extend</code> 语法实现，如下代码:<br><figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.error</span> &#123;</span><br><span class="line">	<span class="attribute">border</span>: <span class="number">1px</span> red;</span><br><span class="line">	<span class="attribute">background-color</span>: <span class="number">#fdd</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.serious-error</span> &#123;</span><br><span class="line">	extend <span class="selector-class">.error</span>;</span><br><span class="line">	<span class="attribute">border-width</span>: <span class="number">3px</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Bill Wen <br>
+        
+        原文链接 : <a href>https://cddbysj.github.io/passages/Sass 快速入门/</a><br>
+        版权声明 : 采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议
+        </blockquote>
+      </div>
+    </div>
+  
+  
+  
+
+  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/CSS/">
+              #CSS
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/Sass/">
+              #Sass
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
+</div>
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/同源政策与跨域问题/" target="_self">同源政策与跨域问题</a>
+        <i class="iconfont icon-next"></i>
+      </div>
+    
+  </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
+</div>
+
+
+      <footer>
+  <p class="site-info">
+    博客已萌萌哒运行<span id="time-to-now"></span><span class="my-face">(●'◡'●)ﾉ♥</span>
+    <br>
+    Theme - <a href="https://github.com/dongyuanxin/theme-bmw">BMW</a> | Made With 💗 | Powered by <a href="https://godbmw.com/">GodBMW</a>
+    <br>
+    
+  </p>
+</footer>
+
+
+
+<script>
+const timeToNowDOM = document.querySelector("#time-to-now");
+const startTimestamp = new Date(2019, 1, 10).getTime();
+
+const updateTimeStr = () => {
+  let offset = parseInt(
+      (new Date().getTime() - startTimestamp) / 1000,
+      10
+    ),
+    day = Math.floor(offset / 86400),
+    hour = Math.floor((offset % 86400) / 3600),
+    minute = Math.floor(((offset % 86400) % 3600) / 60),
+    second = Math.floor(((offset % 86400) % 3600) % 60);
+  timeToNowDOM.innerHTML =
+    day + "天" + hour + "小时" + minute + "分钟" + second + "秒";
+  setTimeout(updateTimeStr, 500);
+}
+
+setTimeout(updateTimeStr, 500);
+</script>
+
+
+      <div class="back-to-top hidden">
+  <span>
+    <i class="iconfont icon-60"></i><span></span>%
+  </span>
+</div>
+
+<script>
+const updateIconToTop = percent => {
+  let dom = document.querySelector(".back-to-top span span");
+  dom.innerText = percent;
+  if(percent < 1) {
+    document.querySelector(".back-to-top").className = "back-to-top hidden";
+  } else {
+    document.querySelector(".back-to-top").className = "back-to-top";
+  }
+}
+
+const handleScoll = () => {
+  let isRunning = false;
+  return () => {
+    if (isRunning) return;
+    isRunning = true;
+    window.requestAnimationFrame(timestamp => {
+      let scrollTop =
+          document.documentElement.scrollTop || document.body.scrollTop,
+        scrollHeight =
+          document.documentElement.scrollHeight ||
+          document.body.scrollHeight,
+        clientHeight =
+          document.documentElement.clientHeight ||
+          document.body.clientHeight;
+      isRunning = false;
+      if (scrollTop <= 1) {
+        updateIconToTop(0);
+        return;
+      }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        updateIconToTop(100);
+      } else {
+        updateIconToTop(parseInt(
+          100 * scrollTop / (scrollHeight - clientHeight),
+          10
+        ));
+      }
+    });
+  };
+}
+
+const backToTop = () => {
+  let scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop,
+    delay = 10,
+    time = 200;
+  if (scrollTop <= 20) {
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    return;
+  }
+  let step = Math.ceil(scrollTop * delay / time);
+  let timer = setInterval(() => {
+    scrollTop =
+      document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop - step <= 0) {
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      clearInterval(timer);
+    } else {
+      document.documentElement.scrollTop = scrollTop - step;
+      document.body.scrollTop = scrollTop - step;
+    }
+  }, delay);
+}
+
+document.addEventListener("scroll", handleScoll(), false);
+
+document.querySelector(".back-to-top").addEventListener("click", backToTop, false);
+
+</script>
+
+    </div>
+
+    
+      <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<script>
+  (() => {
+    const mathjaxConfig = {
+      showProcessingMessages: false, //关闭js加载过程信息
+      messageStyle: "none", //不显示信息
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [["$", "$"], ["\\(", "\\)"]], //行内公式选择符
+        displayMath: [["$$", "$$"], ["\\[", "\\]"]], //段内公式选择符
+        skipTags: ["script", "noscript", "style", "textarea", "pre", "code", "a"] //避开某些标签
+      },
+      "HTML-CSS": {
+        availableFonts: ["STIX", "TeX"], //可选字体
+        showMathMenu: false //关闭右击菜单显示
+      }
+    }
+
+    let mathjaxInterval = setInterval(() => {
+      if(!window.MathJax){
+        return;
+      }
+      window.MathJax.Hub.Config(mathjaxConfig)
+      window.MathJax.Hub.Queue(["Typeset", MathJax.Hub, document.getElementById('app')])
+
+      clearInterval(mathjaxInterval)
+    }, 10)    
+  })()
+</script>
+    
+
+    <script src="https://cdn.bootcss.com/fancybox/3.5.2/jquery.fancybox.min.js" async></script>
+<script async>
+  let fancyTimer = setInterval(function(){
+    if(!window.$){
+      return;
+    }
+    $(document).ready(function() {
+      $(".post img").each(function () {
+        if($(this).parent().get(0).tagName.toLowerCase() === "a") {
+          return;
+        }
+        // $(this).attr("data-fancybox", "gallery"); // if you add 'data-fancybox', img will display after showed
+        var element = document.createElement("a");
+        $(element).attr("data-fancybox", "gallery");
+        $(element).attr("href", $(this).attr("src"));
+        $(this).wrap(element);
+      });
+      
+      clearInterval(fancyTimer);
+    });
+  }, 10);
+</script>
+
+    
+      
+         
+          <script src="/custom/script.js"  async  ></script>
+        
+      
+    
+  </body>
+
+</html>
