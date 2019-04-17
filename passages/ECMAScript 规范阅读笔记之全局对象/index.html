@@ -7,12 +7,12 @@
   
   
   
-  <title>归档: 2019/3 | Bill&#39; Blog</title>
+  <title>前端学习资源索引 | Bill&#39; Blog</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="Hexo, theme-bmw">
+    <meta name="keywords" content="ECMAScript specification,阅读笔记,">
   
 
   <script>
@@ -169,85 +169,313 @@
   })
 </script>
 
-      <div class="container">
-  <div class="timeline">
-  <span class="archive-move-on"></span>
-  <span class="archive-page-counter">
-    
-      <span>Wow! 一共有 17 篇文章</span>
-    
-  </span>
+      
+
+
+
+
+
+
+
+
+<div class="container post-index">
+
   
+
+<div class="post">
+  <h1 class="article-title">
+    <span>前端学习资源索引</span>
+  </h1>
+  <div class="article-top-meta">
+    <span>
+      发布 : 
+      2019-04-16
+    </span>
+    
+    
+      <span>
+        浏览 : <span class="article-timer" data-identity="ECMAScript 规范阅读笔记之全局对象"></span>
+      </span>
+    
+  </div>
+
   
-    <div class="collection-title">
-      <h2>
-        <span>2019</span>
-      </h2>
+
+  <div class="article-content">
+    <div class="markdown-body">
+      <p>根据 <a href="https://tc39.github.io/ecma262/#sec-global-object" target="_blank" rel="noopener">ECMAScript</a> 的规范，全局对象：</p>
+<ul>
+<li>在代码控制流进入任何执行上下文之前，它会被创建。</li>
+<li>它没有构造器 <code>[[Constructor]]</code> 这个内部方法；所以不能用 <code>new</code> 操作符创建全局对象的实例。</li>
+<li>它没有调用 <code>[[Call]]</code> 这个内部方法；所以不能作为函数调用。</li>
+<li>它有一个 <code>[[Prototype]]</code> 内部插槽，其值与各种实现有关。</li>
+<li>除了本规范定义的属性，可能还有基于宿主环境定义的属性。</li>
+</ul>
+<h2 id="值属性"><a href="#值属性" class="headerlink" title="值属性"></a>值属性</h2><ul>
+<li><code>Infinity</code></li>
+<li><code>NaN</code></li>
+<li><code>undefined</code></li>
+</ul>
+<h2 id="函数属性"><a href="#函数属性" class="headerlink" title="函数属性"></a>函数属性</h2><ul>
+<li><code>eval()</code></li>
+<li><code>isFinite()</code></li>
+<li><code>isNaN()</code></li>
+<li><code>parseFloat()</code></li>
+<li><code>parseInt()</code></li>
+<li><code>URI</code> 专用处理函数<ul>
+<li><code>decodeURI()</code></li>
+<li><code>decodeURIComponent()</code></li>
+<li><code>encodeURI()</code></li>
+<li><code>encodeURIComponent()</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="构造器属性"><a href="#构造器属性" class="headerlink" title="构造器属性"></a>构造器属性</h2><ul>
+<li><code>Array</code></li>
+<li><code>ArrayBuffer</code></li>
+<li><code>Boolean</code></li>
+<li><code>DataView</code></li>
+<li><code>Date</code></li>
+<li><code>Error</code></li>
+<li><code>EvalError</code></li>
+<li><code>Float32Array</code></li>
+<li><code>Float64Array</code></li>
+<li><code>Function</code></li>
+<li><code>Init8Array</code></li>
+<li><code>Init16Array</code></li>
+<li><code>Init32rray</code></li>
+<li><code>Map</code></li>
+<li><code>Number</code></li>
+<li><code>Object</code></li>
+<li><code>Promise</code></li>
+<li><code>Proxy</code></li>
+<li><code>RangeError</code></li>
+<li><code>ReferenceError</code></li>
+<li><code>RegExp</code></li>
+<li><code>Set</code></li>
+<li><code>SharedArrayBuffer</code></li>
+<li><code>String</code></li>
+<li><code>Symbol</code></li>
+<li><code>SyntaxError</code></li>
+<li><code>TypeError</code></li>
+<li><code>Uinit8Array</code></li>
+<li><code>Uinit8ClampedArray</code></li>
+<li><code>Uinit16Array</code></li>
+<li><code>Uinit32Array</code></li>
+<li><code>URIError</code></li>
+<li><code>WeakMap</code></li>
+<li><code>WeakSet</code></li>
+</ul>
+<h2 id="其他属性"><a href="#其他属性" class="headerlink" title="其他属性"></a>其他属性</h2><ul>
+<li><code>JSON</code></li>
+<li><code>Math</code></li>
+<li><code>Reflect</code></li>
+</ul>
+    </div>
+  </div>
+  
+    <div class="copy-right">
+      <div class="markdown-body">
+        <blockquote>
+        
+        
+          本文作者 : Bill Wen <br>
+        
+        原文链接 : <a href>https://cddbysj.github.io/passages/ECMAScript 规范阅读笔记之全局对象/</a><br>
+        版权声明 : 采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议
+        </blockquote>
+      </div>
     </div>
   
   
   
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/passages/为什么-0-1-0-2-0-3/">
-          <span>为什么 0.1 + 0.2 !== 0.3</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        03-12
-      </div>
-    </header>
-  </article>
+
   
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/passages/Git-Bash-常用命令集锦/">
-          <span>Git Bash 常用命令集锦</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        03-12
-      </div>
-    </header>
-  </article>
-  
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/passages/‘==’与'==='/">
-          <span>'=='与'==='</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        03-06
-      </div>
-    </header>
-  </article>
-  
-  
-  <article class="posts-collapse">
-    <header>
-      <h2>
-        <a href="/passages/JavaScript中的求值策略/">
-          <span>JavaScript中的求值策略</span>
-        </a>
-      </h2>
-      <div class="post-meta">
-        03-05
-      </div>
-    </header>
-  </article>
-  
+
+  <div class="article-footer">
+    <div class="article-meta pull-left">
+      <span>
+        
+          <i class="iconfont icon-06tags"></i>标签: 
+          
+          <span class="span--tag">
+            <a href="/tags/ECMAScript-specification/">
+              #ECMAScript specification
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/阅读笔记/">
+              #阅读笔记
+            </a>
+          </span>
+          
+        
+      </span>
+    </div>
+    <div class="article-meta pull-right">
+    </div>
+  </div>
 </div>
-  <nav class="page-navigation">
+
+
+  <aside id="sidebar">
+    <p id="sidebar-header"></p>
+    <ol id="sidebar-toc"></ol>
+  </aside>
+  <script async>setTimeout(generateToc, 10);</script>
+
+
+  <nav class="post-navigation">
     
+      <div class="nav-pre">
+        <i class="iconfont icon-prev"></i>
+        上一篇:
+        <a href="/passages/前端学习资源索引/" target="_self">前端学习资源索引</a>
+      </div>
+    
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/JavaScript 学习笔记：Event Loop/" target="_self">JavaScript 学习笔记：Event Loop</a>
+        <i class="iconfont icon-next"></i>
+      </div>
     
   </nav>
+
+   
+
+  
+    <script defer>
+const valineAPI = (() => {
+  try {
+    AV.init("Hyq9wkH495DgNHWhDQCOfQSp-gzGzoHsz", "WaR7nrzhliHj9aVwdQzkdlGd");
+  } catch(error) {}
+  const isExist = (identity) => {
+    identity = identity || getRealPath();
+    let query = new AV.Query('Timer');
+    return new Promise((resolve, reject) => {
+      query.equalTo("identity", identity);
+      query.find().then(results => {
+        resolve(results.length > 0);
+      }, error => reject(error));
+    })
+  }
+
+  const _get = (identity) => {
+    let query = null;
+    if(identity && identity instanceof Array){
+      let querys = [];
+      for(let i = 0; i < identity.length; ++i) {
+        querys[i] = new AV.Query('Timer');
+        querys[i].equalTo('identity', identity[i]);
+      }
+      query = AV.Query.or.apply(null ,querys);
+    } else {
+      identity = identity || getRealPath();
+      query = new AV.Query("Timer");
+      query.equalTo("identity", identity);
+    }
+
+    return new Promise((resolve, reject) => {
+      query.find()
+      .then(results => resolve(results))
+      .catch(error => reject(error))
+    })
+  }
+
+  const create = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let Todo = AV.Object.extend('Timer');
+      let todo = new Todo();
+      todo.set("times", 1);
+      todo.set("identity", identity);
+      todo.save().then(res => resolve(true), error => reject(error));
+    })
+  }
+
+  const update = (identity) => {
+    identity = identity || getRealPath();
+    return new Promise((resolve, reject) => {
+      let query = new AV.Query('Timer');
+      query.equalTo("identity", identity);
+      query.find().then(todos => {
+        todos.forEach(todo => {
+          todo.set("times", todo.attributes.times + 1);
+        });
+        return AV.Object.saveAll(todos);
+      }).then(todos => resolve(true), error => reject(error));
+    })
+  }
+
+  return {
+    isExist,
+    _get,
+    update,
+    create
+  }
+})()
+
+const calcAndWriteTimes = () => {
+  let isPost = true;
+
+  let timerAllDOM = document.querySelectorAll(".article-timer");
+
+  if(isPost) {
+    let identity = timerAllDOM[0].getAttribute("data-identity");
+    valineAPI.isExist(identity)
+    .then(exist => {
+      if(exist) {
+        return valineAPI.update(identity);
+      }
+      return new Promise(resolve => resolve(true));
+    })
+    .then( succuess => valineAPI._get(identity))
+    .then( result => timerAllDOM[0].innerText = result[0].attributes.times)
+    .catch(error => console.log(error.message))
+    return ;
+  }
+
+  let timerDOMCache = {};
+
+  for(let timerDOM of timerAllDOM) {
+    let identity = timerDOM.getAttribute("data-identity");
+    if(timerDOMCache.hasOwnProperty(identity)){
+      timerDOMCache[identity].dom.push(timerDOM);
+    }else{
+      timerDOMCache[identity] = {
+        dom: [timerDOM],
+        times: undefined
+      };
+    }
+  }
+
+  let identities = Object.keys(timerDOMCache);
+  valineAPI._get(identities).then(results => {
+    for(let result of results) {
+      let {identity, times} = result.attributes;
+      timerDOMCache[identity].times = times;
+      timerDOMCache[identity].dom.map(item => item.innerText = times);
+    }
+    for(let identity of identities) {
+      if(timerDOMCache[identity].times){
+        continue;
+      }
+      timerDOMCache[identity].dom.map(item => item.innerText = 1);
+      valineAPI.create(identity);
+    }
+  }).catch(error => console.log(error.message))
+}
+
+if(true){
+  calcAndWriteTimes();
+}
+</script>
+   
+
 </div>
+
 
       <footer>
   <p class="site-info">
