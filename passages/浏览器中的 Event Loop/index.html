@@ -7,12 +7,12 @@
   
   
   
-  <title>JavaScript 学习笔记：Event Loop | Bill&#39; Blog</title>
+  <title>浏览器中的 Event Loop | Bill&#39; Blog</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="JavaScript,异步编程,Event Loop,">
+    <meta name="keywords" content="JavaScript,异步编程,浏览器原理,Event Loop,">
   
 
   <script>
@@ -184,7 +184,7 @@
 
 <div class="post">
   <h1 class="article-title">
-    <span>JavaScript 学习笔记：Event Loop</span>
+    <span>浏览器中的 Event Loop</span>
   </h1>
   <div class="article-top-meta">
     <span>
@@ -194,7 +194,7 @@
     
     
       <span>
-        浏览 : <span class="article-timer" data-identity="JavaScript 学习笔记：Event Loop"></span>
+        浏览 : <span class="article-timer" data-identity="浏览器中的 Event Loop"></span>
       </span>
     
   </div>
@@ -203,22 +203,31 @@
 
   <div class="article-content">
     <div class="markdown-body">
-      <h2 id="Event-Loop-是针对执行环境而非引擎"><a href="#Event-Loop-是针对执行环境而非引擎" class="headerlink" title="Event Loop 是针对执行环境而非引擎"></a>Event Loop 是针对执行环境而非引擎</h2><p>首先，我们要弄清楚一点，Event Loop 是针对 JavaScript 执行环境的，而非 JavaScript 引擎。对于 NodeJS 这一执行环境来说，它的 JavaScript 引擎是 V8，对于 Chrome 这一执行环境来说，它的 JavaScript 引擎是 V8 ；，对 Firefox 来说是 SpiderMonkey。</p>
-<p>ECMAScritp 规范中没有对 Event Loop 的定义，只是定义了 <a href="https://tc39.github.io/ecma262/#sec-jobs-and-job-queues" target="_blank" rel="noopener">Job 和 Job Queues</a> 这两个抽象概念，并规定每一种 ECMAScript 的实现必须至少包含以下两种 Job Queue:</p>
+      <h2 id="Event-loop-是针对执行环境而非引擎"><a href="#Event-loop-是针对执行环境而非引擎" class="headerlink" title="Event loop 是针对执行环境而非引擎"></a>Event loop 是针对执行环境而非引擎</h2><p>首先，我们要弄清楚一点，event loop 是针对 JavaScript runtime environment 的，而非 JavaScript engine。对于 NodeJS 这一 runtime environment 来说，它的 JavaScript engine 是 V8，对于 Chrome 这一 runtime environment 来说，它的 JavaScript engine 是 V8 ；对 Firefox 这一 runtime environment 来说，它的 JavaScript engine 是 SpiderMonkey。event loop 是浏览器和 NodeJS 这两个 JavaScript runtime environment 处理异步的机制，它不属于 JavaScript 引擎的运行机制。另外，浏览器和 NodeJS 的 event loop 是不一样的，这篇文章将集中讨论浏览器这一运行时环境。</p>
+<p>按照 ECMAScript 规范，JavaScript 引擎要实现至少以下两种 Job Queue：</p>
 <ul>
 <li><code>ScriptJobs</code> Jobs that validate and evaluate ECMAScript Script and Module source text</li>
 <li><code>PromiseJobs</code> Jobs that are responses to the settlement of a Promise</li>
 </ul>
-<p>ECMAScript 规范定义 Job 和 Job Queue 这两个抽象概念，是为了协调同步脚本代码与 Promise 在 JavaScript 执行上下文栈中的执行顺序。JavaScript 引擎需要实现的是 ECMAScript 规范，与 Event Loop 相关的，即要实现至少以上两种 Job Queue。而 Event Loop 则是浏览器及 NodeJS 等这些执行环境在 Job Queue 的基础上，结合其他 Web API 来实现的，以协调 <code>setTimeout</code> 定时器、<code>XMLHttpRequest</code> 等不属于 JavaScript 语言特性的异步任务，与同步脚本、Promise，在 JavaScript 执行上下文栈中的执行顺序。</p>
-<p>那么为什么 ECMAScript 规范中没有对 Event Loop 的定义呢？</p>
-<p>我们以浏览器环境为例，Event Loop 的存在，是为了协调事件、用户交互、脚本、UI渲染、网络处理等行为，防止主线程阻塞。ECMAScript 规范主要是写给 JavaScript 这门语言的引擎实现者看的，而引擎的主要工作是解析并执行脚本。所以 Event Loop 在实现上的标准没有写在 ECMAScript 规范，而是写在 <a href="https://html.spec.whatwg.org/#event-loops" target="_blank" rel="noopener">HTML 规范</a> 中，是 Web application APIs 的组成部分，供各大浏览器厂商参考。总而言之，如朴灵所说，Event Loop 是 JavaScript 执行环境对于异步的运行机制，而非 JavaScript 引擎。</p>
-<p>下面这些都是不属于 JavaScript 语言特性的 API（以浏览器环境为主）：</p>
+<p>ECMAScript 规范定义 Job 和 Job Queue 这两个抽象概念，是为了协调同步脚本代码与 Promise 回调在 JavaScript 执行上下文栈中的执行顺序。ECMAScript 规范定义的 Job 基本相当于 HTML 规范中的 microtask。</p>
+<p>对于浏览器这个 JavaScript runtime environment 来说，microtask 主要包括以下两项：</p>
+<ul>
+<li>promise 的回调函数</li>
+<li>MutationObserver 的回调函数，DOM 规范指出 <a href="https://dom.spec.whatwg.org/#queue-a-mutation-record" target="_blank" rel="noopener">step 5 of queuing a mutation record</a> 会将 MutationObserver 的回调函数放置在 microtask 中。</li>
+</ul>
+<p>浏览器的 event loop 是在 miscrotask 的基础上，结合其他 Web API 来实现的，event loop 的存在，是为了协调事件、用户交互、脚本、UI渲染、网络处理等行为，防止主线程阻塞。注意下面这段话：</p>
+<blockquote>
+<p>The event loop, the web APIs and the message queue/task queue are not part of the JavaScript engine, it’s a part of browser’s JavaScript runtime environment or Nodejs JavaScript runtime environment (in case of Nodejs). In Nodejs, the web APIs are replaced by the C/C++ APIs.<br><a href="https://blog.bitsrc.io/understanding-asynchronous-javascript-the-event-loop-74cd408419ff" target="_blank" rel="noopener">more</a></p>
+</blockquote>
+<p>ECMAScript 规范主要是写给 JavaScript 这门语言的引擎实现者看的，而引擎的主要工作是解析并执行脚本。所以 event loop 在实现上的标准没有写在 ECMAScript 规范，而是写在 <a href="https://html.spec.whatwg.org/#event-loops" target="_blank" rel="noopener">HTML 规范</a> 中，是 Web application APIs 的组成部分，供各大浏览器厂商参考。总而言之，event loop 是 JavaScript runtime environment 对于异步的实现，而非 JavaScript engine。</p>
+<p>下面这些都是不属于 JavaScript 语言特性的 API（浏览器环境）：</p>
 <ul>
 <li><code>setTimeout</code>, <code>setInterval</code>, <code>setImmediate</code> 等定时器，按朴灵的说法，其本质仍然是事件。定时器并不是特例。到达时间点后，会形成一个事件（timeout 事件）。不同的是，一般事件是靠底层系统或者线程池之类的产生事件，但定时器事件是靠事件循环不停检查系统时间来判定是否到达时间点来产生事件。</li>
 <li>DOM 网页文档对象模型，主要给 JavaScript 的编程接口。</li>
 <li>BOM 浏览器对象模型，主要是一些浏览器的 API。</li>
 <li><code>XMLHttpRequest</code>。</li>
 </ul>
+<p>上面这些 API 都挂载在 <code>window</code> 或者 <code>document</code> 对象上，部分属性会有重叠。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.setTimeout === setTimeout; <span class="comment">// true</span></span><br><span class="line"><span class="built_in">window</span>.XMLHttpRequest === XMLHttpRequest; <span class="comment">// true</span></span><br><span class="line"><span class="built_in">document</span>.location === <span class="built_in">window</span>.location; <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
 <h2 id="Browsing-Context"><a href="#Browsing-Context" class="headerlink" title="Browsing Context"></a>Browsing Context</h2><p>即浏览器执行上下文，是一个向用户呈现 <a href="https://www.w3.org/TR/dom41/#document" target="_blank" rel="noopener">Document</a> 对象的环境。通常来说，浏览器的每一个标签页包含一个 browsing context，每一个 <code>&lt;iframe&gt;</code> 标签也包含一个 browsing context。每个 browsing context 具有如下属性：</p>
 <ul>
 <li>一个相对应的 <a href="https://html.spec.whatwg.org/#windowproxy" target="_blank" rel="noopener"><code>WindowProxy</code></a> 对象。可以理解为一个封装了浏览器全局对象 <code>window</code> 的对象，包含了在浏览器环境执行 JavaScript 代码所需的初始化信息，比如：<ul>
@@ -228,7 +237,7 @@
 </ul>
 </li>
 </ul>
-<p>另外必然还有，DOM 和 <code>setTimeout</code> 等各种 Web API。</p>
+<p>另外，必然还有 DOM 和 <code>setTimeout</code> 等各种 Web API。</p>
 <ul>
 <li>一个 <code>opener browsing context</code> 属性，它的值是 <code>null</code> 或者另一个 browsing context。初始值为 <code>null</code>。</li>
 <li>一个 <code>disowned</code> 布尔属性，初始值为 <code>false</code>。</li>
@@ -241,21 +250,69 @@
 <li>worker event loop</li>
 <li>worklet event loop</li>
 </ul>
-<p>这里我们主要关注第一种 Event Loop，即一个浏览器标签页包含一个 Event Loop 或者一组同源的标签页共享一个 Event Loop 的情况。</p>
-<h2 id="Task-Queue"><a href="#Task-Queue" class="headerlink" title="Task Queue"></a>Task Queue</h2><p>Event Loop 具有一个或多个任务队列 task queue。任务队列是一个有序的任务列表，这些任务可能负责以下工作之一：</p>
+<p>这里我们主要关注第一种 event loop，即一个浏览器标签页包含一个 event loop 或者一组同源的标签页共享一个 event loop 的情况。下面提到的 event loop 也均指 window event loop。</p>
+<h2 id="Task-Queue-Message-Queue"><a href="#Task-Queue-Message-Queue" class="headerlink" title="Task Queue (Message Queue)"></a>Task Queue (Message Queue)</h2><p>Event loop 具有一个或多个 task queue，即任务队列。任务队列也被叫做 message queue 消息队列。任务队列是一个有序的任务列表，这些任务是指负责以下工作的算法：</p>
 <ul>
 <li>事件</li>
 <li>解析 HTML</li>
 <li>回调</li>
 <li>获取网络资源</li>
-<li>给 DOM 操作的反馈</li>
+<li>对 DOM 操作作出反应</li>
+</ul>
+<p>每个任务都被定义为来自特定的任务源。来自同一个任务源的所有任务（例如，由文档的定时器生成的回调、由鼠标在文档上移动而触发的事件、为该文档的解析器排队的任务）必须始终添加到同一任务队列中，但是来自不同任务源的任务可以被放置在不同的任务队列中。</p>
+<h2 id="Generic-task-sources"><a href="#Generic-task-sources" class="headerlink" title="Generic task sources"></a>Generic task sources</h2><p>以下任务源被本规范和其他规范中许多几乎不相关的特性使用：</p>
+<ul>
+<li>DOM 操作任务源<br>此任务源用于对 DOM 操作做出反应的功能，例如在将元素插入文档时以非阻塞方式发生的事件。</li>
+<li>用户交互任务源<br>此任务源用于对用户交互做出反应的功能，例如键盘或鼠标输入。响应用户输入而发送的事件(例如点击事件)必须使用<strong>在用户交互任务源中排队的任务</strong>来触发。</li>
+<li>网络任务源<br>此任务源用于响应网络活动而触发的功能。</li>
+<li>历史遍历任务源<br>这个任务源是用来对 <code>history.back()</code> 及类似的 API 进行排队。</li>
+</ul>
+<h2 id="microtask-queue"><a href="#microtask-queue" class="headerlink" title="microtask queue"></a>microtask queue</h2><p>每个 event loop 都有一个 microtask queue 微任务队列。microtask 微任务是指最初要在微任务队列而非任务队列上排队的任务。对于浏览器环境来说，主要是 <code>Promise</code> 回调函数 和 <code>MutaionObserver</code> 回调函数。</p>
+<h2 id="macrotask-amp-microtask"><a href="#macrotask-amp-microtask" class="headerlink" title="macrotask &amp; microtask"></a>macrotask &amp; microtask</h2><p>即宏任何和微任务，这是由 V8 引擎团队提出的术语，ECMAScript 规范并没有定义，HTML 规范中定义的是 task 和 microtask。可以不严谨的认为: V8  团队提出的 macrotask 等同于 HTML 规范中的 task。</p>
+<h2 id="浏览器的异步处理模型"><a href="#浏览器的异步处理模型" class="headerlink" title="浏览器的异步处理模型"></a>浏览器的异步处理模型</h2><p>目前在网络上找到的一些中文资料无法完全说服自己，而 HTML 规范主要给出的是详实严谨的算法，所以试着按照自己的理解梳理下：<br>通常情况下，每一个浏览器的标签页都有一个独立的 browsing context。这个 browsing context：</p>
+<ul>
+<li>有一个 execution context stack 执行上下文栈</li>
+<li>至少有一个而且通常只有一个与之关联的 event loop。</li>
+</ul>
+<p>而这里 event loop 有一个 microtask queue 和至少一个 task queue。当一个浏览器标签页加载时，通常是做以下几件事情（按照 HTML 规范是 task 任务）：</p>
+<ul>
+<li>解析 HTML</li>
+<li>当遇到 <code>&lt;script src=&#39;...&#39;&gt;, &lt;link&gt;, &lt;img&gt;</code> 等标签时发起网络请求。如果有 <code>defer</code> 属性浏览器则会并行发起网络请求，并在 HTML 解析完毕后执行脚本；如果有 <code>async</code> 属性浏览器则会并行发起网络请求，在脚本资源加载完成后执行。</li>
+<li>当遇到内嵌的 <code>script</code> 脚本时，执行脚本内的代码，即将脚本内的代码会形成若干执行上下文，被压入执行上下文栈</li>
+<li>渲染 UI</li>
+</ul>
+<p>这里需要注意的是，<code>script</code> 脚本内执行的诸如 <code>setTimeout</code> 定时器的回调、通过 <code>XMLHttpRequest</code> 发起的异步网络请求、<code>onclick</code> 等事件触发的回调、通过脚本动态操作 DOM 等，这些操作或者说任务，实际上与上面提到的 task 任务是平行的。也就是说，我们写在 <code>script</code> 标签内的 author code，如果里面包含 <code>setTimoutout</code> 等非 JavaScript 语言特性的代码，JavaScript 引擎会调用外部的 Web APIs，将这些任务放置到 task queue 中，根据 HTML 规范，一个浏览器标签页至少有一个 task queue；而遇到 Promise 或者 MutationObserver，则浏览器会将其放置到 miscrotask queue 中。</p>
+<p>简而言之，对于浏览器来说，event loop 这种机制，将 JavaScript 引擎的执行上下文栈（也叫 call stack 调用栈）、Web APIs、task queue 这三者进行协调。下面是一个简单的浏览器 JavaScript runtime environment 图示：</p>
+<p><img src="imgase/callStack-messageQueue-webApis.png" alt></p>
+<h3 id="Tick"><a href="#Tick" class="headerlink" title="Tick"></a>Tick</h3><p>Event loop 中，每一次循环称为 tick, 每一次 tick 的任务如下：</p>
+<ol>
+<li>选择最先进入队列的任务 task，如果有则执行</li>
+<li>检查是否存在 microtask，如果存在则不停的执行，直至清空 microtask 队列</li>
+<li>渲染 UI</li>
+<li>重复以上步骤</li>
+</ol>
+<h3 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">    <span class="built_in">Promise</span>.resolve().then(<span class="function"><span class="params">value</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'promise1'</span>)); <span class="comment">// then 内回调函数进入 microtask queue</span></span></span><br><span class="line"><span class="javascript">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">      <span class="built_in">console</span>.log(<span class="string">'timeout1'</span>); <span class="comment">// 此行代码进入 macrotask queue</span></span></span><br><span class="line"><span class="undefined">    &#125;, 0);</span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(<span class="string">'script1'</span>); <span class="comment">// 同步代码，执行</span></span></span><br><span class="line"><span class="undefined">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">      <span class="built_in">console</span>.log(<span class="string">'timeout2'</span>); <span class="comment">// 此行代码进入 macrotask queue</span></span></span><br><span class="line"><span class="undefined">    &#125;, 0);</span></span><br><span class="line"><span class="javascript">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="javascript">      <span class="built_in">console</span>.log(<span class="string">'timeout3'</span>); <span class="comment">// 此行代码进入 macrotask queue</span></span></span><br><span class="line"><span class="undefined">    &#125;, 0);</span></span><br><span class="line"><span class="javascript">    <span class="built_in">Promise</span>.resolve().then(<span class="function"><span class="params">value</span> =&gt;</span> <span class="built_in">console</span>.log(<span class="string">'promise2'</span>)); <span class="comment">// then 内回调函数进入 microtask queue</span></span></span><br><span class="line"><span class="javascript">    <span class="built_in">console</span>.log(<span class="string">'script2'</span>); <span class="comment">// 同步代码，执行</span></span></span><br><span class="line"><span class="undefined">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">console</span>.log(<span class="string">'script3'</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">console</span>.log(<span class="string">'script4'</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- ... --&gt;</span></span><br></pre></td></tr></table></figure>
+<p>上面代码中日志打印的顺序为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">script1 -&gt; promise1 -&gt; script2 -&gt; promise2 -&gt; script3 -&gt; script4 -&gt; timeout1 -&gt; timeout2 -&gt; timeout3</span><br></pre></td></tr></table></figure></p>
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><p>从性能优化的角度出发，压倒一切的指导方针是，以下几种情况必须并行执行，否则可能会导致阻塞 event loop，这包括但不限于：</p>
+<ul>
+<li>执行繁重的计算；</li>
+<li>显示面向用户的提示；</li>
+<li>执行可能需要外部系统参与的操作(即退出流程)。</li>
 </ul>
 <h2 id="参考链接和外部资料"><a href="#参考链接和外部资料" class="headerlink" title="参考链接和外部资料"></a>参考链接和外部资料</h2><ul>
-<li><p><a href="https://w3c.github.io/html/webappapis.html#webappapis" target="_blank" rel="noopener">Web API - W3C</a></p>
+<li><p><a href="https://www.html5rocks.com/en/tutorials/internals/howbrowserswork/" target="_blank" rel="noopener">how-browsers-work</a> 发布于 2011 年 8 月 5 日的一篇深度好文，作者是一名以色列开发者，用了几年收集整理有关浏览器内部原理的资料，同时阅读了非常多的浏览器源码，最终形成了这篇文章，详细讲述了以 Chrome 为主的浏览器的工作原理，你在网络看到绝大多数有关浏览器原理的文章和图片可能都是取材于这篇文章的。</p>
 </li>
-<li><p><a href="https://zhuanlan.zhihu.com/p/33058983" target="_blank" rel="noopener">详解 JavaScript 中的 Event Loop 机制 - 知乎专栏</a></p>
+<li><p><a href="https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/" target="_blank" rel="noopener">tasks-microtasks-queues-and-schedules</a></p>
 </li>
-<li><p><a href="https://juejin.im/post/5b24b116e51d4558a65fdb70" target="_blank" rel="noopener">Js 的事件循环(Event Loop)机制以及实例讲解 - 掘金</a></p>
+<li><p><a href="https://blog.bitsrc.io/understanding-asynchronous-javascript-the-event-loop-74cd408419ff" target="_blank" rel="noopener">understanding-asynchronous-javascript-the-event-loop</a></p>
+</li>
+<li><p><a href="https://html.spec.whatwg.org/multipage/webappapis.html#run-a-classic-script" target="_blank" rel="noopener">重新认识 script 标签 - HTML specification</a></p>
+</li>
+<li><p><a href="https://html.spec.whatwg.org/" target="_blank" rel="noopener">HTML specification</a></p>
+</li>
+<li><p><a href="https://w3c.github.io/html/webappapis.html#webappapis" target="_blank" rel="noopener">HTML draft</a></p>
+</li>
+<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop" target="_blank" rel="noopener">Event Loop - MDN</a></p>
 </li>
 <li><p><a href="http://coderlt.coding.me/2017/12/13/event-loop/" target="_blank" rel="noopener">JavaScript 中的事件循环 Event Loop</a></p>
 </li>
@@ -274,7 +331,7 @@
         
           本文作者 : Bill Wen <br>
         
-        原文链接 : <a href>https://cddbysj.github.io/passages/JavaScript 学习笔记：Event Loop/</a><br>
+        原文链接 : <a href>https://cddbysj.github.io/passages/浏览器中的 Event Loop/</a><br>
         版权声明 : 采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议
         </blockquote>
       </div>
@@ -300,6 +357,12 @@
           <span class="span--tag">
             <a href="/tags/异步编程/">
               #异步编程
+            </a>
+          </span>
+          
+          <span class="span--tag">
+            <a href="/tags/浏览器原理/">
+              #浏览器原理
             </a>
           </span>
           
@@ -330,9 +393,15 @@
       <div class="nav-pre">
         <i class="iconfont icon-prev"></i>
         上一篇:
-        <a href="/passages/ECMAScript 规范阅读笔记之全局对象/" target="_self">前端学习资源索引</a>
+        <a href="/passages/ECMAScript 规范阅读笔记之全局对象/" target="_self">ECMAScript 规范阅读笔记之全局对象</a>
       </div>
     
+    
+      <div class="nav-next">
+        下一篇:
+        <a href="/passages/an overview of the engine, the runtime, and the call stack/" target="_self">an overview of the engine, the runtime, and the call stack</a>
+        <i class="iconfont icon-next"></i>
+      </div>
     
   </nav>
 

@@ -7,12 +7,12 @@
   
   
   
-  <title>ECMAScript 规范阅读笔记之全局对象 | Bill&#39; Blog</title>
+  <title>an overview of the engine, the runtime, and the call stack | Bill&#39; Blog</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   
-    <meta name="keywords" content="ECMAScript specification,阅读笔记,">
+    <meta name="keywords" content="JavaScript,转载,">
   
 
   <script>
@@ -184,17 +184,17 @@
 
 <div class="post">
   <h1 class="article-title">
-    <span>ECMAScript 规范阅读笔记之全局对象</span>
+    <span>an overview of the engine, the runtime, and the call stack</span>
   </h1>
   <div class="article-top-meta">
     <span>
       发布 : 
-      2019-04-16
+      2019-04-19
     </span>
     
     
       <span>
-        浏览 : <span class="article-timer" data-identity="ECMAScript 规范阅读笔记之全局对象"></span>
+        浏览 : <span class="article-timer" data-identity="an overview of the engine, the runtime, and the call stack"></span>
       </span>
     
   </div>
@@ -203,74 +203,38 @@
 
   <div class="article-content">
     <div class="markdown-body">
-      <p>根据 <a href="https://tc39.github.io/ecma262/#sec-global-object" target="_blank" rel="noopener">ECMAScript</a> 的规范，全局对象：</p>
+      <p></p>
+<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>Almost everyone has already heard of the V8 Engine as a concept, and most people know that JavaScript is single-threaded or that it is using a <strong>callback queue</strong>.</p>
+<p>In this post, we’ll go through all these concepts in detail and explain how JavaScript actually runs. By knowing these details, you’ll be able to write better, non-blocking apps that are properly leveraging the provided APIs.</p>
+<p>If you’re relatively new to JavaScript, this blog post will help you understand why JavaScript is so “weird” compared to other languages.</p>
+<p>And if you’re an experienced JavaScript developer, hopefully, it will give you some fresh insights on how the JavaScript Runtime you’re using every day actually works.</p>
+<h2 id="The-JavaScript-Engine"><a href="#The-JavaScript-Engine" class="headerlink" title="The JavaScript Engine"></a>The JavaScript Engine</h2><p>A popular example of a JavaScript Engine is Google’s V8 engine. The V8 engine is used inside Chrome and Node.js for example. Here is a very simplified view of what it looks like:</p>
+<p><img src="images/javascript-engine.png" alt></p>
+<p>The Engine consists of two main components:</p>
 <ul>
-<li>在代码控制流进入任何执行上下文之前，它会被创建。</li>
-<li>它没有构造器 <code>[[Constructor]]</code> 这个内部方法；所以不能用 <code>new</code> 操作符创建全局对象的实例。</li>
-<li>它没有调用 <code>[[Call]]</code> 这个内部方法；所以不能作为函数调用。</li>
-<li>它有一个 <code>[[Prototype]]</code> 内部插槽，其值与各种实现有关。</li>
-<li>除了本规范定义的属性，可能还有基于宿主环境定义的属性。</li>
+<li>Memory Heap — this is where the memory allocation happens</li>
+<li>Call Stack — this is where your stack frames are as your code executes</li>
 </ul>
-<h2 id="值属性"><a href="#值属性" class="headerlink" title="值属性"></a>值属性</h2><ul>
-<li><code>Infinity</code></li>
-<li><code>NaN</code></li>
-<li><code>undefined</code></li>
-</ul>
-<h2 id="函数属性"><a href="#函数属性" class="headerlink" title="函数属性"></a>函数属性</h2><ul>
-<li><code>eval()</code></li>
-<li><code>isFinite()</code></li>
-<li><code>isNaN()</code></li>
-<li><code>parseFloat()</code></li>
-<li><code>parseInt()</code></li>
-<li><code>URI</code> 专用处理函数<ul>
-<li><code>decodeURI()</code></li>
-<li><code>decodeURIComponent()</code></li>
-<li><code>encodeURI()</code></li>
-<li><code>encodeURIComponent()</code></li>
-</ul>
-</li>
-</ul>
-<h2 id="构造器属性"><a href="#构造器属性" class="headerlink" title="构造器属性"></a>构造器属性</h2><ul>
-<li><code>Array</code></li>
-<li><code>ArrayBuffer</code></li>
-<li><code>Boolean</code></li>
-<li><code>DataView</code></li>
-<li><code>Date</code></li>
-<li><code>Error</code></li>
-<li><code>EvalError</code></li>
-<li><code>Float32Array</code></li>
-<li><code>Float64Array</code></li>
-<li><code>Function</code></li>
-<li><code>Init8Array</code></li>
-<li><code>Init16Array</code></li>
-<li><code>Init32rray</code></li>
-<li><code>Map</code></li>
-<li><code>Number</code></li>
-<li><code>Object</code></li>
-<li><code>Promise</code></li>
-<li><code>Proxy</code></li>
-<li><code>RangeError</code></li>
-<li><code>ReferenceError</code></li>
-<li><code>RegExp</code></li>
-<li><code>Set</code></li>
-<li><code>SharedArrayBuffer</code></li>
-<li><code>String</code></li>
-<li><code>Symbol</code></li>
-<li><code>SyntaxError</code></li>
-<li><code>TypeError</code></li>
-<li><code>Uinit8Array</code></li>
-<li><code>Uinit8ClampedArray</code></li>
-<li><code>Uinit16Array</code></li>
-<li><code>Uinit32Array</code></li>
-<li><code>URIError</code></li>
-<li><code>WeakMap</code></li>
-<li><code>WeakSet</code></li>
-</ul>
-<h2 id="其他属性"><a href="#其他属性" class="headerlink" title="其他属性"></a>其他属性</h2><ul>
-<li><code>JSON</code></li>
-<li><code>Math</code></li>
-<li><code>Reflect</code></li>
-</ul>
+<h2 id="The-runtime"><a href="#The-runtime" class="headerlink" title="The runtime"></a>The runtime</h2><p>There are APIs in the browser that have been used by almost any JavaScript developer out there (e.g. “setTimeout”). Those APIs, however, are not provided by the Engine.</p>
+<p>So, where are they coming from?</p>
+<p>It turns out that the reality is a bit more complicated.</p>
+<p><img src="images/javascript-runtime.png" alt></p>
+<p>So, we have the Engine but there is actually a lot more. We have those things called Web APIs which are provided by browsers, like the DOM, AJAX, setTimeout and much more.</p>
+<p>And then, we have the so popular <strong>event loop</strong> and the <strong>callback queue</strong>.</p>
+<blockquote>
+<p>A runtime environment is the execution environment provided to an application by the operating system. In a runtime environment, the application can send instructions or commands to the processor and access other system resources such as RAM, DISK etc. JS engine, Event queues, Event loop and Web/Dom APIs forms the Runtime Environment.</p>
+</blockquote>
+<h2 id="The-Call-Stack"><a href="#The-Call-Stack" class="headerlink" title="The Call Stack"></a>The Call Stack</h2><p>JavaScript is a single-threaded programming language, which means it has a single Call Stack. Therefore it can do one thing at a time.</p>
+<p>The Call Stack is a data structure which records basically where in the program we are. If we step into a function, we put it on the top of the stack. If we return from a function, we pop off the top of the stack. That’s all the stack can do.</p>
+<p>Let’s see an example. Take a look at the following code:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">multiply</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> x * y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">printSquare</span>(<span class="params">x</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> s = multiply(x, x);</span><br><span class="line">    <span class="built_in">console</span>.log(s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">printSquare(<span class="number">5</span>);</span><br></pre></td></tr></table></figure></p>
+<p>Running code on a single thread can be quite easy since you don’t have to deal with complicated scenarios that are arising in multi-threaded environments — for example, deadlocks.</p>
+<p>But running on a single thread is quite limiting as well. Since JavaScript has a single Call Stack, what happens when things are slow?</p>
+<h2 id="Concurrency-amp-the-Event-Loop"><a href="#Concurrency-amp-the-Event-Loop" class="headerlink" title="Concurrency &amp; the Event Loop"></a>Concurrency &amp; the Event Loop</h2><p>What happens when you have function calls in the Call Stack that take a huge amount of time in order to be processed? For example, imagine that you want to do some complex image transformation with JavaScript in the browser.</p>
+<p>You may ask — why is this even a problem? The problem is that while the Call Stack has functions to execute, the browser can’t actually do anything else — it’s getting blocked. This means that the browser can’t render, it can’t run any other code, it’s just stuck. And this creates problems if you want nice fluid UIs in your app.</p>
+<p>And that’s not the only problem. Once your browser starts processing so many tasks in the Call Stack, it may stop being responsive for quite a long time. And most browsers take action by raising an error, asking you whether you want to terminate the web page.</p>
+<p>ow, that’s not the best user experience out there, is it?</p>
+<p>So, how can we execute heavy code without blocking the UI and making the browser unresponsive? Well, the solution is asynchronous callbacks.</p>
+<p>This will be explained in greater detail in <strong>Part 2</strong> of the “How JavaScript actually works” tutorial: “Inside the V8 engine + 5 tips on how to write optimized code”.</p>
     </div>
   </div>
   
@@ -281,7 +245,7 @@
         
           本文作者 : Bill Wen <br>
         
-        原文链接 : <a href>https://cddbysj.github.io/passages/ECMAScript 规范阅读笔记之全局对象/</a><br>
+        原文链接 : <a href>https://cddbysj.github.io/passages/an overview of the engine, the runtime, and the call stack/</a><br>
         版权声明 : 采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议
         </blockquote>
       </div>
@@ -299,14 +263,14 @@
           <i class="iconfont icon-06tags"></i>标签: 
           
           <span class="span--tag">
-            <a href="/tags/ECMAScript-specification/">
-              #ECMAScript specification
+            <a href="/tags/JavaScript/">
+              #JavaScript
             </a>
           </span>
           
           <span class="span--tag">
-            <a href="/tags/阅读笔记/">
-              #阅读笔记
+            <a href="/tags/转载/">
+              #转载
             </a>
           </span>
           
@@ -331,13 +295,13 @@
       <div class="nav-pre">
         <i class="iconfont icon-prev"></i>
         上一篇:
-        <a href="/passages/前端学习资源索引/" target="_self">前端学习资源索引</a>
+        <a href="/passages/浏览器中的 Event Loop/" target="_self">浏览器中的 Event Loop</a>
       </div>
     
     
       <div class="nav-next">
         下一篇:
-        <a href="/passages/浏览器中的 Event Loop/" target="_self">浏览器中的 Event Loop</a>
+        <a href="/passages/Inside the V8 engine + 5 tips on how to write optimized code/" target="_self">Inside the V8 engine + 5 tips on how to write optimized code</a>
         <i class="iconfont icon-next"></i>
       </div>
     
