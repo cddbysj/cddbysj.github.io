@@ -174,6 +174,56 @@
   
   <div class="post">
     <h1 class="article-title">
+      <a href="/passages/event loop 问答/">
+        <span></span>
+      </a>
+    </h1>
+    <!-- PC端文章信息 -->
+    <div class="article-top-meta pc-view">
+      <span>
+        发布时间 : 2019-04-22
+      </span>
+    </div>
+    <!-- 移动端文章信息 -->
+    <div class="article-top-meta mobile-view">
+      <span>
+        发布 : 2019-04-22
+      </span>
+      
+      
+        <span>
+          浏览 : <span class="article-timer" data-identity="event loop 问答"></span>
+        </span>
+      
+    </div>
+    
+    <!-- 文章简介 -->
+    <div class="article-content">
+      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
+        
+      </div>
+    </div>
+    <div class="article-footer">
+      <div class="article-meta pull-left">
+        <!-- 分类pc端可见 -->
+        <span class="pc-view">
+          
+        <span>
+                    
+        </span>
+      </span></div>
+      
+        <div class="article-meta pull-right">
+          <span class="pc-view">
+            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="event loop 问答"></span>
+          </span>
+        </div>
+      
+    </div>
+  </div>
+  
+  <div class="post">
+    <h1 class="article-title">
       <a href="/passages/Inside the V8 engine + 5 tips on how to write optimized code/">
         <span>Inside the V8 engine + 5 tips on how to write optimized code</span>
       </a>
@@ -330,17 +380,7 @@
     <!-- 文章简介 -->
     <div class="article-content">
       <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        <p>争取一篇文章彻底弄懂 event loop 机制。首先，我们要弄清楚一点，event loop 是针对 JavaScript runtime environment 的，而非 JavaScript engine。对于 NodeJS 这一 runtime environment 来说，它的 JavaScript engine 是 V8，对于 Chrome 这一 runtime environment 来说，它的 JavaScript engine 是 V8 ；对 Firefox 这一 runtime environment 来说，它的 JavaScript engine 是 SpiderMonkey。event loop 是浏览器和 NodeJS 这两个 JavaScript runtime environment 处理异步的机制，它不属于 JavaScript 引擎的运行机制。另外，浏览器和 NodeJS 的 event loop 是不一样的，这篇文章将集中讨论浏览器这一运行时环境。</p>
-<p>按照 ECMAScript 规范，JavaScript 引擎要实现至少以下两种 Job Queue：</p>
-<ul>
-<li><code>ScriptJobs</code> Jobs that validate and evaluate ECMAScript Script and Module source text</li>
-<li><code>PromiseJobs</code> Jobs that are responses to the settlement of a Promise</li>
-</ul>
-<p>ECMAScript 规范内定义的 Job Queue 相当于 HTML 规范中的 microtask。在浏览器这个 JavaScript runtime environment 来说，microtask 主要包括以下两项：</p>
-<ul>
-<li>promise 的回调函数</li>
-<li>MutationObserver 的回调函数，DOM 规范指出 <a href="https://dom.spec.whatwg.org/#queue-a-mutation-record" target="_blank" rel="noopener">step 5 of queuing a mutation record</a> 会将 MutationObserver 的回调函数放置在 microtask 中。</li>
-</ul>
+        <p>争取一篇文章彻底弄懂 event loop 机制。首先，我们要弄清楚一点，event loop 是针对 JavaScript runtime environment 的，而非 JavaScript engine。对于 NodeJS 这一 runtime environment 来说，它的 JavaScript engine 是 V8，对于 Chrome 这一 runtime environment 来说，它的 JavaScript engine 是 V8 ；对 Firefox 这一 runtime environment 来说，它的 JavaScript engine 是 SpiderMonkey。event loop 是浏览器和 NodeJS 这两个 JavaScript runtime environment 处理异步的机制，它不属于 JavaScript 引擎的运行机制。另外，浏览器和 NodeJS 的 event loop 是不一样的，这篇文章将集中讨论浏览器这一运行时环境。另外要说明的是，浏览器除了包含 JavaScript runtime environment 之外，还负责 HTML 和 CSS 的解析以及最后渲染图形在屏幕上。</p>
       </div>
     </div>
     <div class="article-footer">
@@ -359,12 +399,6 @@
               </span>
             
               <span class="span--tag">
-                <a href="/tags/异步编程/">
-                  #异步编程
-                </a>
-              </span>
-            
-              <span class="span--tag">
                 <a href="/tags/浏览器原理/">
                   #浏览器原理
                 </a>
@@ -373,6 +407,12 @@
               <span class="span--tag">
                 <a href="/tags/Event-Loop/">
                   #Event Loop
+                </a>
+              </span>
+            
+              <span class="span--tag">
+                <a href="/tags/异步编程/">
+                  #异步编程
                 </a>
               </span>
             
@@ -786,77 +826,6 @@
         <div class="article-meta pull-right">
           <span class="pc-view">
             <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="JavaScript 学习笔记：面向对象之混入"></span>
-          </span>
-        </div>
-      
-    </div>
-  </div>
-  
-  <div class="post">
-    <h1 class="article-title">
-      <a href="/passages/JavaScript 学习笔记：class 语法糖/">
-        <span>JavaScript 学习笔记：class 语法糖</span>
-      </a>
-    </h1>
-    <!-- PC端文章信息 -->
-    <div class="article-top-meta pc-view">
-      <span>
-        发布时间 : 2019-04-04
-      </span>
-    </div>
-    <!-- 移动端文章信息 -->
-    <div class="article-top-meta mobile-view">
-      <span>
-        发布 : 2019-04-04
-      </span>
-      
-      
-        <span>
-          浏览 : <span class="article-timer" data-identity="JavaScript 学习笔记：class 语法糖"></span>
-        </span>
-      
-    </div>
-    
-    <!-- 文章简介 -->
-    <div class="article-content">
-      <div class="markdown-body article-content--inner" v-html="mdToHtml(psg.summary)">
-        <p>在前面一篇原型与继承的学习笔记中，最后使用基于原型的范式实现了继承。而 ES6 引入的 <code>class</code> 关键字则提供了更加漂亮的语法，与 Java 等语言有点类似。<br>
-      </p></div>
-    </div>
-    <div class="article-footer">
-      <div class="article-meta pull-left">
-        <!-- 分类pc端可见 -->
-        <span class="pc-view">
-          
-        <span>
-          
-            <i class="iconfont icon-06tags"></i>标签:
-            
-              <span class="span--tag">
-                <a href="/tags/JavaScript/">
-                  #JavaScript
-                </a>
-              </span>
-            
-              <span class="span--tag">
-                <a href="/tags/学习笔记/">
-                  #学习笔记
-                </a>
-              </span>
-            
-              <span class="span--tag">
-                <a href="/tags/面向对象/">
-                  #面向对象
-                </a>
-              </span>
-            
-                    
-        </span>
-      </span></div>
-      
-        <div class="article-meta pull-right">
-          <span class="pc-view">
-            <i class="iconfont icon-view"></i>浏览: <span class="article-timer" data-identity="JavaScript 学习笔记：class 语法糖"></span>
           </span>
         </div>
       
