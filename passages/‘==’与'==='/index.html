@@ -207,6 +207,8 @@
 <h2 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h2><p>对于基本数据类型而言，<code>===</code> 直接比较两个基本数据类型的值是否相等，不做类型转换，<code>==</code> 会试图进行类型转换再比较。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> s1 = <span class="string">'1'</span>;</span><br><span class="line"><span class="keyword">const</span> s2 = <span class="string">'1'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> n1 = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">const</span> n2 = <span class="number">1.0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> b = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(s1 === s2); <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(s1 === n1); <span class="comment">// false</span></span><br><span class="line"><span class="built_in">console</span>.log(s1 == n1); <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(n1 === n2); <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(n1 === b); <span class="comment">// false</span></span><br><span class="line"><span class="built_in">console</span>.log(s1 == b); <span class="comment">// true</span></span><br><span class="line"><span class="built_in">console</span>.log(n1 == b); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
 <h2 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h2><p>对于对象而言， <code>==</code> 和 <code>===</code> 效果完全一样，都是用于判断两个对象是否是<strong>同一个对象</strong>。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> o1 = &#123;&#125;;</span><br><span class="line"><span class="keyword">const</span> o2 = &#123;&#125;;</span><br><span class="line"><span class="keyword">const</span> o3 = o1; <span class="comment">// 此时 o1 和 o3 指向堆内存中的同一个对象</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(o1 == o2); <span class="comment">// false</span></span><br><span class="line"><span class="built_in">console</span>.log(o1 === o2); <span class="comment">// false</span></span><br><span class="line"><span class="built_in">console</span>.log(o1 === o3); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于对象而言，<code>==</code> 和 <code>===</code> 效果是一样的，而且是比较两个对象变量是否指向内存中的同一块区域。对于基本数据类型而言，<code>==</code> 在面对两个不同类型的数据时，会试图进行类型转换再比较，而<code>===</code>则不会，直接比较值是否相等。</p>
+<p>图片测试<br></p>
+<p><img src="javascript-runtime.png" alt></p>
     </div>
   </div>
   
@@ -267,13 +269,13 @@
       <div class="nav-pre">
         <i class="iconfont icon-prev"></i>
         上一篇:
-        <a href="/passages/JavaScript中的求值策略/" target="_self">JavaScript中的求值策略</a>
+        <a href="/passages/JavaScript 中的求值策略/" target="_self">JavaScript 中的求值策略</a>
       </div>
     
     
       <div class="nav-next">
         下一篇:
-        <a href="/passages/Git-Bash-常用命令集锦/" target="_self">Git Bash 常用命令集锦</a>
+        <a href="/passages/Git Bash 常用命令集锦/" target="_self">Git Bash 常用命令集锦</a>
         <i class="iconfont icon-next"></i>
       </div>
     
