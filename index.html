@@ -37,6 +37,12 @@
 
 
 
+  
+  
+    
+  
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/han-css@3/dist/han.min.css">
+
 
 
   <meta http-equiv="Cache-Control" content="no-transform">
@@ -401,6 +407,425 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cddbysj.github.io/passages/优化博客的网页性能/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Bill Wen">
+      <meta itemprop="description" content="less is more">
+      <meta itemprop="image" content="https://avataaars.io/?avatarStyle=Transparent&topType=Hat&accessoriesType=Sunglasses&facialHairType=BeardMedium&facialHairColor=BrownDark&clotheType=BlazerSweater&eyeType=Surprised&eyebrowType=Default&mouthType=Eating&skinColor=Pale">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bill' Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/passages/优化博客的网页性能/" class="post-title-link" itemprop="url">优化博客的网页性能</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-08 09:50:28 / 修改时间：12:22:16" itemprop="dateCreated datePublished" datetime="2019-05-08T09:50:28+08:00">2019-05-08</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">437</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">1 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="未优化前的性能指标"><a href="#未优化前的性能指标" class="headerlink" title="未优化前的性能指标"></a>未优化前的性能指标</h2><p>使用 Google 的 PageSpeed Insights 评估，移动设备总得分：91，各项指标如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">指标</th>
+<th style="text-align:center">时间（估算值）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">首次内容绘制时间</td>
+<td style="text-align:center">1.9 秒</td>
+</tr>
+<tr>
+<td style="text-align:left">速度指数</td>
+<td style="text-align:center">3.5 秒</td>
+</tr>
+<tr>
+<td style="text-align:left">可交互前的耗时</td>
+<td style="text-align:center">3.6 秒</td>
+</tr>
+<tr>
+<td style="text-align:left">首次有效绘制时间</td>
+<td style="text-align:center">3.0 秒</td>
+</tr>
+<tr>
+<td style="text-align:left">首次 CPU 闲置时间</td>
+<td style="text-align:center">3.4 秒</td>
+</tr>
+<tr>
+<td style="text-align:left">输入延迟（估算值）</td>
+<td style="text-align:center">30 毫秒</td>
+</tr>
+</tbody>
+</table>
+<h3 id="优化建议"><a href="#优化建议" class="headerlink" title="优化建议"></a>优化建议</h3><p>这些优化建议可以加快网页加载速度。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">优化建议</th>
+<th style="text-align:center">有望节省的总时间（估算值）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">1. 适当调整图片大小</td>
+<td style="text-align:center">4.05 s</td>
+</tr>
+<tr>
+<td style="text-align:left">2. 采用新一代格式提供图片</td>
+<td style="text-align:center">2.4 s</td>
+</tr>
+<tr>
+<td style="text-align:left">3. 移除阻塞渲染的资源</td>
+<td style="text-align:center">0.93 s</td>
+</tr>
+<tr>
+<td style="text-align:left">4. 移除未使用的 CSS</td>
+<td style="text-align:center">0.3 s</td>
+</tr>
+</tbody>
+</table>
+<h2 id="待优化的项目"><a href="#待优化的项目" class="headerlink" title="待优化的项目"></a>待优化的项目</h2><ul>
+<li><p><a href="https://developers.google.com/speed/" target="_blank" rel="noopener">PageSpeed tools - Google</a> 分析网站的性能，展示详细的结果并给出详细的建议</p>
+</li>
+<li><p><a href="https://tools.pingdom.com" target="_blank" rel="noopener">Pingdom Website Speed Test</a></p>
+</li>
+<li><p><a href="https://oded.blog/2017/07/26/hexo-performance-optimizations/" target="_blank" rel="noopener">Hexo performance optimizations</a></p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://cddbysj.github.io/passages/CSS 问题之居中一个元素/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Bill Wen">
+      <meta itemprop="description" content="less is more">
+      <meta itemprop="image" content="https://avataaars.io/?avatarStyle=Transparent&topType=Hat&accessoriesType=Sunglasses&facialHairType=BeardMedium&facialHairColor=BrownDark&clotheType=BlazerSweater&eyeType=Surprised&eyebrowType=Default&mouthType=Eating&skinColor=Pale">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bill' Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/passages/CSS 问题之居中一个元素/" class="post-title-link" itemprop="url">CSS 问题之居中一个元素</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-07 15:55:54 / 修改时间：17:18:19" itemprop="dateCreated datePublished" datetime="2019-05-07T15:55:54+08:00">2019-05-07</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">113</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">1 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body han-init-context" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>来自 freeCodeCamp 的 <a href="https://medium.freecodecamp.org/how-to-center-things-with-style-in-css-dc87b7542689" target="_blank" rel="noopener">这篇文章</a> 已经写的非常好了。</p>
+<h2 id="动手实践：使用-CSS-画一颗心"><a href="#动手实践：使用-CSS-画一颗心" class="headerlink" title="动手实践：使用 CSS 画一颗心"></a>动手实践：使用 CSS 画一颗心</h2>
+<p class="codepen" data-height="265" data-theme-id="0" data-default-tab="css,result" data-user="cddbysj" data-slug-hash="byNPWX" data-preview="true" style="height: 265px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border: 2px solid; margin: 1em 0; padding: 1em;" data-pen-title="heart">
+  <span>See the Pen <a href="https://codepen.io/cddbysj/pen/byNPWX/" target="_blank" rel="noopener">
+  heart</a> by BillWen (<a href="https://codepen.io/cddbysj" target="_blank" rel="noopener">@cddbysj</a>)
+  on <a href="https://codepen.io" target="_blank" rel="noopener">CodePen</a>.</span>
+</p>
+<script async src="https://static.codepen.io/assets/embed/ei.js"></script>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://cddbysj.github.io/passages/买一张木桌/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -519,7 +944,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -714,7 +1139,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -918,7 +1343,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -1156,7 +1581,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -1393,7 +1818,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -1591,7 +2016,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -1778,7 +2203,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -1988,7 +2413,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
+    <div class="post-body han-init-context" itemprop="articleBody">
 
       
       
@@ -2009,410 +2434,6 @@
         
       
     </li></ul></div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://cddbysj.github.io/passages/Inside the V8 engine + 5 tips on how to write optimized code/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Bill Wen">
-      <meta itemprop="description" content="less is more">
-      <meta itemprop="image" content="https://avataaars.io/?avatarStyle=Transparent&topType=Hat&accessoriesType=Sunglasses&facialHairType=BeardMedium&facialHairColor=BrownDark&clotheType=BlazerSweater&eyeType=Surprised&eyebrowType=Default&mouthType=Eating&skinColor=Pale">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Bill' Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/passages/Inside the V8 engine + 5 tips on how to write optimized code/" class="post-title-link" itemprop="url">Inside the V8 engine + 5 tips on how to write optimized code</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-19 15:14:13" itemprop="dateCreated datePublished" datetime="2019-04-19T15:14:13+08:00">2019-04-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-04-24 14:04:25" itemprop="dateModified" datetime="2019-04-24T14:04:25+08:00">2019-04-24</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-symbolscount">
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">本文字数：</span>
-                
-                <span title="本文字数">15k</span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">27 分钟</span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>接上一篇关于 JavaScript 的引擎、运行时、调用栈的技术文章，这篇文章主要集中于 V8 引擎以及写出高性能代码的 5 个小建议。<br>原文链接在<a href="https://blog.sessionstack.com/how-javascript-works-inside-the-v8-engine-5-tips-on-how-to-write-optimized-code-ac089e62b12e?gi=9a787042deeb" target="_blank" rel="noopener">这里</a><br>此外，<a href="https://tcatche-dot-site.ext.jsproxy.tk/2017/08/how-javascript-work-part-2-v8-engine-and-5-tips-optimized/?&amp;flag__=010" target="_blank" rel="noopener">这里</a>是一篇中文翻译。</p>
-<p>The first post of the series focused on providing an overview of the engine, the runtime and the call stack. This second post will be diving into the internal parts of Google’s V8 JavaScript engine. We’ll also provide a few quick tips on how to write better JavaScript code.</p>
-<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>A <strong>JavaScript engine</strong> is a program or an interpreter which executes JavaScript code. A JavaScript engine can be implemented as a standard interpreter, or just-in-time compiler that compiles JavaScript to bytecode in some form.</p>
-<p>This is a list of popular projects that are implementing a JavaScript engine:</p>
-<ul>
-<li><a href="https://en.wikipedia.org/wiki/V8_engine" target="_blank" rel="noopener">V8</a> — open source, developed by Google, written in C++</li>
-<li><a href="https://en.wikipedia.org/wiki/Rhino_(JavaScript_engine" target="_blank" rel="noopener">Rhino</a>) — managed by the Mozilla Foundation, open source, developed entirely in Java</li>
-<li><a href="https://en.wikipedia.org/wiki/SpiderMonkey" target="_blank" rel="noopener">SpiderMonkey</a> — the first JavaScript engine, which back in the days powered Netscape Navigator, and today powers Firefox</li>
-<li><a href="https://en.wikipedia.org/wiki/WebKit#JavaScriptCore" target="_blank" rel="noopener">JavaScriptCore</a> — open source, marketed as Nitro and developed by Apple for Safari</li>
-<li><a href="https://en.wikipedia.org/wiki/KJS_(software" target="_blank" rel="noopener">KJS</a>) — KDE’s engine originally developed by Harri Porten for the KDE project’s Konqueror web browser</li>
-<li><a href="https://en.wikipedia.org/wiki/Chakra_(JScript_engine" target="_blank" rel="noopener">Chakra(JScript9)</a>)  — Internet Explorer</li>
-<li><a href="https://en.wikipedia.org/wiki/Chakra_(JavaScript_engine" target="_blank" rel="noopener">Chakra(JavaScript)</a>)  — Microsoft Edge</li>
-<li><a href="https://en.wikipedia.org/wiki/Nashorn_(JavaScript_engine" target="_blank" rel="noopener">Nashorn</a>) - open source as part of OpenJDK, written by Oracle Java Languages and Tool Group</li>
-<li><a href="https://en.wikipedia.org/wiki/JerryScript" target="_blank" rel="noopener">JerryScript</a> — is a lightweight engine for the Internet of Things.</li>
-</ul>
-<p>Why was the V8 Engine created?<br>The V8 Engine which is built by Google is open source and written in C++. This engine is used inside Google Chrome. Unlike the rest of the engines, however, V8 is also used for the popular Node.js runtime.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/passages/Inside the V8 engine + 5 tips on how to write optimized code/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://cddbysj.github.io/passages/an overview of the engine, the runtime, and the call stack/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Bill Wen">
-      <meta itemprop="description" content="less is more">
-      <meta itemprop="image" content="https://avataaars.io/?avatarStyle=Transparent&topType=Hat&accessoriesType=Sunglasses&facialHairType=BeardMedium&facialHairColor=BrownDark&clotheType=BlazerSweater&eyeType=Surprised&eyebrowType=Default&mouthType=Eating&skinColor=Pale">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Bill' Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/passages/an overview of the engine, the runtime, and the call stack/" class="post-title-link" itemprop="url">an overview of the engine, the runtime, and the call stack</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-19 14:38:06" itemprop="dateCreated datePublished" datetime="2019-04-19T14:38:06+08:00">2019-04-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-04-24 14:02:54" itemprop="dateModified" datetime="2019-04-24T14:02:54+08:00">2019-04-24</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-symbolscount">
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">本文字数：</span>
-                
-                <span title="本文字数">4.1k</span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">7 分钟</span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>转载一篇国外开发者写的技术文章，关于 JavaScript 的引擎、运行时、调用栈。</p>
-<h2 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h2><p>Almost everyone has already heard of the V8 Engine as a concept, and most people know that JavaScript is single-threaded or that it is using a <strong>callback queue</strong>.</p>
-<p>In this post, we’ll go through all these concepts in detail and explain how JavaScript actually runs. By knowing these details, you’ll be able to write better, non-blocking apps that are properly leveraging the provided APIs.</p>
-<p>If you’re relatively new to JavaScript, this blog post will help you understand why JavaScript is so “weird” compared to other languages.</p>
-<p>And if you’re an experienced JavaScript developer, hopefully, it will give you some fresh insights on how the JavaScript Runtime you’re using every day actually works.</p>
-<h2 id="The-JavaScript-Engine"><a href="#The-JavaScript-Engine" class="headerlink" title="The JavaScript Engine"></a>The JavaScript Engine</h2><p>A popular example of a JavaScript Engine is Google’s V8 engine. The V8 engine is used inside Chrome and Node.js for example. Here is a very simplified view of what it looks like:</p>
-<img src="/passages/an%20overview%20of%20the%20engine,%20the%20runtime,%20and%20the%20call%20stack/javascript-engine.png">
-<p>The Engine consists of two main components:</p>
-<ul>
-<li>Memory Heap — this is where the memory allocation happens</li>
-<li>Call Stack — this is where your stack frames are as your code executes</li>
-</ul>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/passages/an overview of the engine, the runtime, and the call stack/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
 
     
 
@@ -2497,7 +2518,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">34</span>
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2679,7 +2700,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">3:58</span>
+    <span title="站点阅读时长">3:59</span>
   
 </div>
 
