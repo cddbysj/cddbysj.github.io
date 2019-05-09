@@ -3,7 +3,10 @@
   <entry>
     <title><![CDATA[优化博客的网页性能]]></title>
     <url>%2Fpassages%2F%E4%BC%98%E5%8C%96%E5%8D%9A%E5%AE%A2%E7%9A%84%E7%BD%91%E9%A1%B5%E6%80%A7%E8%83%BD%2F</url>
-    <content type="text"><![CDATA[未优化前的性能指标使用 Google 的 PageSpeed Insights 评估，移动设备得分：91，各项指标如下： 指标 时间（估算值） 首次内容绘制时间 1.9 秒 速度指数 3.5 秒 可交互前的耗时 3.6 秒 首次有效绘制时间 3.0 秒 首次 CPU 闲置时间 3.4 秒 输入延迟（估算值） 30 毫秒 优化建议这些优化建议可以加快网页加载速度。 优化建议 有望节省的总时间（估算值） 1. 适当调整图片大小 4.05 s 2. 采用新一代格式提供图片 2.4 s 3. 移除阻塞渲染的资源 0.93 s 4. 移除未使用的 CSS 0.3 s 使用 gulp 压缩 html, css, js 等gulp 让你用代码实现一组任务的串行或者并行执行。 参考链接 PageSpeed tools - Google 分析网站的性能，展示详细的结果并给出详细的建议 Pingdom Website Speed Test Hexo performance optimizations]]></content>
+    <content type="text"><![CDATA[未优化前的性能指标使用 Google 的 PageSpeed Insights 评估，移动设备得分：91，各项指标如下： 指标 时间（估算值） 首次内容绘制时间 1.9 秒 速度指数 3.5 秒 可交互前的耗时 3.6 秒 首次有效绘制时间 3.0 秒 首次 CPU 闲置时间 3.4 秒 输入延迟（估算值） 30 毫秒 优化建议这些优化建议可以加快网页加载速度。 优化建议 有望节省的总时间（估算值） 1. 适当调整图片大小 4.05 s 2. 采用新一代格式提供图片 2.4 s 3. 移除阻塞渲染的资源 0.93 s 4. 移除未使用的 CSS 0.3 s 使用 gulp 压缩 html, css, js 等gulp 让你用代码实现一组任务的串行或者并行执行。 一个典型的 gulpfile.js 可能是这样的：123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354const &#123; src, dest, parallel &#125; = require('gulp')const minifycss = require('gulp-minify-css')const uglify = require('gulp-uglify')const htmlmin = require('gulp-htmlmin')const htmlclean = require('gulp-htmlclean')const imagemin = require('gulp-imagemin')const minifyHtml = () =&gt; src('./public/**/*.html') .pipe(htmlclean()) .pipe( htmlmin(&#123; removeComments: true, minifyCSS: true, minifyURLs: true, minifyJS: true &#125;) ) .pipe(dest('./public'))const minifyCss = () =&gt; src('./public/**/*.css') .pipe( minifycss(&#123; compatibility: 'ie8' &#125;) ) .pipe(dest('./public'))const minifyJs = () =&gt; src('./public/**/*.js') .pipe(uglify()) .pipe(dest('./public'))const minifyImage = () =&gt; src('./public/images/*.*') .pipe( imagemin( [ imagemin.gifsicle(), imagemin.jpegtran(), imagemin.optipng(), imagemin.svgo() ], &#123; verbose: true &#125; ) ) .pipe(dest('./public/images'))const build = parallel(minifyHtml, minifyCss, minifyJs, minifyImage)module.exports = &#123; default: build&#125; 参考链接 PageSpeed tools - Google 分析网站的性能，展示详细的结果并给出详细的建议 Pingdom Website Speed Test Hexo performance optimizations]]></content>
+      <tags>
+        <tag>性能优化</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[CSS 问题之居中一个元素]]></title>
@@ -52,7 +55,7 @@
   <entry>
     <title><![CDATA[好物日志]]></title>
     <url>%2Fpassages%2F%E5%A5%BD%E7%89%A9%E6%97%A5%E5%BF%97%2F</url>
-    <content type="text"><![CDATA[这里记录我买过的好东西。 SONY 头戴式无线降噪耳机型号是 WH-900N。对机器发出的杂音(比如引擎发出的噪音)降噪效果不错，对人声降噪效果一般。另外这款耳机，不适合在比较热的环境里佩戴。淘宝购入。 IRIS OHYAMA 日本爱丽思迷你空气循环扇简约精致的空气循环扇.最小的一档是静音挡,声音确实比一般的风扇要小,同时它的送风距离较一般风扇更长.搭配空调使用效果更佳.]]></content>
+    <content type="text"><![CDATA[这里记录我买过的好东西。 SONY 头戴式无线降噪耳机 WH-900NIRIS OHYAMA 日本爱丽思迷你空气循环扇 SONY 头戴式无线降噪耳机型号是 WH-900N。对机器发出的杂音(比如引擎发出的噪音)降噪效果不错，对人声降噪效果一般。另外这款耳机，不适合在比较热的环境里佩戴。淘宝购入。 IRIS OHYAMA 日本爱丽思迷你空气循环扇简约精致的空气循环扇.最小的一档是静音挡,声音确实比一般的风扇要小,同时它的送风距离较一般风扇更长.搭配空调使用效果更佳.]]></content>
       <tags>
         <tag>生活</tag>
         <tag>好物</tag>
