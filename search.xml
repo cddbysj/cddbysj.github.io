@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[优化博客的网页性能]]></title>
     <url>%2Fpassages%2F%E4%BC%98%E5%8C%96%E5%8D%9A%E5%AE%A2%E7%9A%84%E7%BD%91%E9%A1%B5%E6%80%A7%E8%83%BD%2F</url>
-    <content type="text"><![CDATA[未优化前的性能指标使用 Google 的 PageSpeed Insights 评估，移动设备得分：91，各项指标如下： 指标 时间（估算值） 首次内容绘制时间 1.9 秒 速度指数 3.5 秒 可交互前的耗时 3.6 秒 首次有效绘制时间 3.0 秒 首次 CPU 闲置时间 3.4 秒 输入延迟（估算值） 30 毫秒 优化建议这些优化建议可以加快网页加载速度。 优化建议 有望节省的总时间（估算值） 1. 适当调整图片大小 4.05 s 2. 采用新一代格式提供图片 2.4 s 3. 移除阻塞渲染的资源 0.93 s 4. 移除未使用的 CSS 0.3 s 使用 hexo-filter-optimize 插件这个插件主要做的优化是：找到像 &lt;link rel=&quot;stylesheet&quot;&gt; 这样的标签，因为它们在获取如 CSS 文件资源的时候会阻塞渲染。 参考链接 PageSpeed tools - Google 分析网站的性能，展示详细的结果并给出详细的建议 Pingdom Website Speed Test Hexo performance optimizations]]></content>
+    <content type="text"><![CDATA[未优化前的性能指标使用 Google 的 PageSpeed Insights 评估，移动设备得分：91，各项指标如下： 指标 时间（估算值） 首次内容绘制时间 1.9 秒 速度指数 3.5 秒 可交互前的耗时 3.6 秒 首次有效绘制时间 3.0 秒 首次 CPU 闲置时间 3.4 秒 输入延迟（估算值） 30 毫秒 优化建议这些优化建议可以加快网页加载速度。 优化建议 有望节省的总时间（估算值） 1. 适当调整图片大小 4.05 s 2. 采用新一代格式提供图片 2.4 s 3. 移除阻塞渲染的资源 0.93 s 4. 移除未使用的 CSS 0.3 s 使用 gulp 压缩 html, css, js 等gulp 让你用代码实现一组任务的串行或者并行执行。2 参考链接 PageSpeed tools - Google 分析网站的性能，展示详细的结果并给出详细的建议 Pingdom Website Speed Test Hexo performance optimizations]]></content>
   </entry>
   <entry>
     <title><![CDATA[CSS 问题之居中一个元素]]></title>
